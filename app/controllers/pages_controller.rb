@@ -1,7 +1,7 @@
 class PagesController < ApplicationController
   allow_unauthenticated_access
 
-  layout "landing", only: %i[ home ]
+  layout "landing", only: %i[ home insegnanti ]
   def home
   end
 
@@ -12,5 +12,8 @@ class PagesController < ApplicationController
   end
 
   def contact
+  end
+
+  def insegnanti
   end
 end

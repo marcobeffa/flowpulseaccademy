@@ -16,8 +16,78 @@
     <%# Includes all stylesheet files in app/assets/stylesheets %>
     <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
     <%= javascript_importmap_tags %>
+    <!-- app/views/pages/igiene_posturale.html.erb -->
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+    <title>Igiene Posturale - Riattiva il Tuo Corpo in 4 Settimane</title>
+    <%# Se usi tailwindcss-rails non serve il CDN. In dev puoi lasciare il CDN solo per test veloci:
+      <script src="https://cdn.tailwindcss.com"></script>
+  %>
+    <style>
+      /* Animazioni senza plugin */
+      @keyframes fade-in { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+      @keyframes slide-up { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
+      @keyframes float { 0% { transform: translateY(0); } 50% { transform: translateY(-8px);} 100% { transform: translateY(0);} }
+
+      .animate-fade-in { animation: fade-in .6s ease-out both; }
+      .animate-slide-up { animation: slide-up .7s ease-out both; }
+      .animate-float { animation: float 6s ease-in-out infinite; }
+      .delay-300 { animation-delay: .3s; }
+      .delay-1000 { animation-delay: 1s; }
+
+      /* Rispetta utenti con riduzione movimento */
+      @media (prefers-reduced-motion: reduce) {
+        .animate-fade-in, .animate-slide-up, .animate-float { animation: none !important; }
+      }
+
+      /* Offset per header fisso quando si usa scrollIntoView */
+      section { scroll-margin-top: 5.5rem; }
+    </style>
   </head>
-  <body>
+  <body class="bg-white text-gray-900">
+    <!-- Navigation -->
+    <nav class="fixed top-0 w-full bg-white/90 backdrop-blur border-b border-gray-100 z-50">
+      <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div class="flex h-16 items-center justify-between">
+          <div class="flex-shrink-0">
+            <a href="#" class="text-2xl font-bold text-blue-600">IgienePosturale</a>
+          </div>
+          <!-- Desktop -->
+          <div class="hidden md:block">
+            <div class="ml-10 flex items-baseline space-x-8">
+              <%= link_to "Il Programma", root_path(anchor: "programma"), class: "px-3 py-2 text-sm font-medium text-gray-600 hover:text-blue-600 transition-colors" %>
+              <%= link_to "Modalità", root_path(anchor: "modalita"), class: "px-3 py-2 text-sm font-medium text-gray-600 hover:text-blue-600 transition-colors" %>
+              <%= link_to "Il Tuo Profilo", root_path(anchor: "profili"), class: "px-3 py-2 text-sm font-medium text-gray-600 hover:text-blue-600 transition-colors" %>
+              <%= link_to "Insegnanti", insegnanti_path,
+              class: "px-3 py-2 text-sm font-medium text-gray-600 hover:text-blue-600 transition-colors" %>
+              <%= link_to "Inizia Ora", new_contact_path,
+              class: "rounded-full bg-blue-600 px-6 py-2 text-sm font-semibold text-white shadow-lg transition-all duration-300 hover:bg-blue-700 hover:shadow-xl" %>
+            </div>
+          </div>
+          <!-- Mobile toggle -->
+          <button id="menuBtn" class="md:hidden inline-flex items-center justify-center rounded-md p-2 text-gray-600 hover:bg-gray-100 focus:outline-none" aria-controls="mobileMenu" aria-expanded="false" aria-label="Apri menu">
+            <!-- Icona hamburger -->
+            <svg id="iconOpen" class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+            <!-- Icona close -->
+            <svg id="iconClose" class="hidden h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+          </button>
+        </div>
+      </div>
+      <!-- Mobile menu -->
+      <div id="mobileMenu" class="md:hidden hidden border-t border-gray-100">
+        <div class="space-y-1 px-4 pb-4 pt-2">
+          <%= link_to "Il programma", root_path(anchor: "programma"), class: "block rounded-md px-3 py-2 text-base font-medium text-gray-700 hover:bg-gray-100" %>
+          <%= link_to "Modalità", root_path(anchor: "modalita"), class: "block rounded-md px-3 py-2 text-base font-medium text-gray-700 hover:bg-gray-100" %>
+          <%= link_to "Il Tuo Profilo", root_path(anchor: "profili"), class: "block rounded-md px-3 py-2 text-base font-medium text-gray-700 hover:bg-gray-100" %>
+          <%= link_to "Insegnanti", insegnanti_path,
+          class: "block rounded-md px-3 py-2 text-base font-medium text-gray-700 hover:bg-gray-100"
+        %>
+          <%= link_to "Il Tuo Profilo", "#profili", class: "block rounded-md px-3 py-2 text-base font-medium text-gray-700 hover:bg-gray-100" %>
+          <%= link_to "Inizia Ora", new_contact_path,
+          class: "block rounded-full bg-blue-600 px-4 py-2 text-base font-semibold text-white hover:bg-blue-700" %>
+        </div>
+      </div>
+    </nav>
     <%= yield %>
   </body>
 </html>
