@@ -1,4 +1,5 @@
 Rails.application.routes.draw do
+  resources :contacts
   resource :session
   resources :passwords, param: :token
   get "pages/home"
