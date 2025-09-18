@@ -27,7 +27,7 @@ class TrainingCourseDashboard < Administrate::BaseDashboard
     venue_manager_role_id: Field::Number,
     version: Field::String,
     created_at: Field::DateTime,
-    updated_at: Field::DateTime,
+    updated_at: Field::DateTime
   }.freeze
 
   # COLLECTION_ATTRIBUTES

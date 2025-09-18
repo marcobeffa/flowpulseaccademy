@@ -16,7 +16,7 @@ class ScheduledEventDashboard < Administrate::BaseDashboard
     start_at: Field::DateTime,
     training_course: Field::BelongsTo,
     created_at: Field::DateTime,
-    updated_at: Field::DateTime,
+    updated_at: Field::DateTime
   }.freeze
 
   # COLLECTION_ATTRIBUTES
