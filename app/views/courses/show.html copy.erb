@@ -1,0 +1,45 @@
+<!-- app/views/courses/show.html.erb -->
+<%= render "shared/breadcrumb", crumbs: { "Corsi" => courses_path, @course.titolo => nil } %>
+<div class="space-y-6">
+  <%= render "shared/card", title: @course.titolo do %>
+    <div class="grid md:grid-cols-2 gap-6">
+      <div class="space-y-3">
+        <% if @course.taxonomy_path.present? %>
+          <p class="text-sm text-slate-500">Percorso:
+            <span class="font-medium text-slate-700"><%= @course.taxonomy_path.join(" / ") %></span>
+          </p>
+        <% end %>
+        <% if @course.pacchetti.present? %>
+          <div>
+            <h4 class="text-sm font-semibold text-slate-900 mb-2">Pacchetti</h4>
+            <ul class="space-y-1">
+              <% @course.pacchetti.each do |p| %>
+                <li class="text-sm text-slate-700">
+                  <span class="font-medium"><%= p[:slug] %></span>
+                  — <%= p[:canale] %>, <%= p[:modalita] %>
+                  <% if p[:prezzo_eur] %> · <span class="text-slate-500"><%= number_to_currency(p[:prezzo_eur], unit: "€", format: "%n %u") %></span><% end %>
+                  <% if p[:attivo] == true %> · <span class="text-emerald-600">attivo</span><% end %>
+                </li>
+              <% end %>
+            </ul>
+          </div>
+        <% end %>
+      </div>
+      <div class="space-y-2">
+        <h4 class="text-sm font-semibold text-slate-900">Link risorse</h4>
+        <div class="text-sm"><%= resource_links(url_content: @course.url_content, url_video: @course.url_video, url_pdf: @course.url_pdf) %></div>
+      </div>
+    </div>
+  <% end %>
+  <%= render "shared/card", title: "Lezioni", subtitle: "Indice delle lezioni del corso" do %>
+    <ol class="space-y-2">
+      <% @course.lessons.sort_by(&:order).each do |l| %>
+        <%= render "shared/list_row",
+          main_label: "#{l.order}. #{l.title}",
+          main_url:   course_lesson_path(@course.slug, l.slug),
+          secondary:  l.description,
+          right:      resource_links(url_content: l.url_content, url_video: l.url_video, url_pdf: l.url_pdf) %>
+      <% end %>
+    </ol>
+  <% end %>
+</div>

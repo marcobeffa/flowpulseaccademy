@@ -1,0 +1,19 @@
+<!-- app/views/shared/_list_row.html.erb -->
+<li class="group flex items-start justify-between gap-4 rounded-xl border border-slate-200 bg-white px-4 py-3 hover:shadow-sm transition">
+  <div>
+    <div class="flex items-center gap-3">
+      <%= link_to main_label, main_url, class: "font-medium text-slate-900 group-hover:underline" %>
+      <% if local_assigns[:badge].present? %>
+        <%= type_badge(badge) %>
+      <% end %>
+    </div>
+    <% if local_assigns[:secondary].present? %>
+      <p class="mt-1 text-sm text-slate-500"><%= secondary %></p>
+    <% end %>
+  </div>
+  <% if local_assigns[:right].present? %>
+    <div class="text-sm text-slate-500 shrink-0">
+      <%= right %>
+    </div>
+  <% end %>
+</li>

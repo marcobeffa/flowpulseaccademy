@@ -1,0 +1,14 @@
+<!-- app/views/shared/_card.html.erb -->
+<div class="rounded-2xl border border-slate-200 bg-white shadow-sm">
+  <% if local_assigns[:title].present? || local_assigns[:subtitle].present? %>
+    <div class="border-b border-slate-200 px-5 py-4">
+      <h3 class="text-lg font-semibold text-slate-900"><%= title %></h3>
+      <% if local_assigns[:subtitle].present? %>
+        <p class="mt-1 text-sm text-slate-500"><%= subtitle %></p>
+      <% end %>
+    </div>
+  <% end %>
+  <div class="px-5 py-4">
+    <%= yield %>
+  </div>
+</div>

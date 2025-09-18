@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title><%= content_for(:title) || "Flowpulseaccademy" %></title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+    <%= yield :head %>
+    <%# Enable PWA manifest for installable apps (make sure to enable in config/routes.rb too!) %>
+    <%#= tag.link rel: "manifest", href: pwa_manifest_path(format: :json) %>
+    <link rel="icon" href="/icon.png" type="image/png">
+    <link rel="icon" href="/icon.svg" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="/icon.png">
+    <%# Includes all stylesheet files in app/assets/stylesheets %>
+    <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
+    <%= javascript_importmap_tags %>
+  </head>
+  <body class="h-full">
+    <div class="min-h-full">
+      <!-- Mobile menu overlay -->
+      <div id="mobile-menu-overlay" class="fixed inset-0 z-40 lg:hidden hidden">
+        <div class="fixed inset-0 bg-gray-600 bg-opacity-75" aria-hidden="true"></div>
+        <div class="relative flex w-full max-w-xs flex-1 flex-col bg-white">
+          <div class="absolute top-0 right-0 -mr-12 pt-2">
+            <button type="button" id="close-sidebar" class="ml-1 flex h-10 w-10 items-center justify-center rounded-full focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white">
+              <span class="sr-only">Close sidebar</span>
+              <svg class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
+          <%= render 'shared/dashboard/sidebar_content' %>
+        </div>
+      </div>
+      <!-- Static sidebar for desktop -->
+      <div class="hidden lg:fixed lg:inset-y-0 lg:z-50 lg:flex lg:w-72 lg:flex-col">
+        <div class="flex grow flex-col gap-y-5 overflow-y-auto bg-white px-6 pb-4 border-r border-gray-200">
+          <%= render 'shared/dashboard/sidebar_content' %>
+        </div>
+      </div>
+      <div class="lg:pl-72">
+        <!-- Top navigation -->
+        <%#= render 'shared/dashboard/topbar' %>
+        <!-- Main content -->
+        <main class="py-8">
+          <div class="px-4 sm:px-6 lg:px-8">
+            <!-- Page header -->
+            <% if content_for?(:page_header) %>
+              <%= yield :page_header %>
+            <% else %>
+              <div class="mb-8">
+                <h1 class="text-2xl font-bold leading-7 text-gray-900 sm:truncate sm:text-3xl sm:tracking-tight">
+                  <%= content_for?(:page_title) ? yield(:page_title) : "Dashboard" %>
+                </h1>
+              </div>
+            <% end %>
+            <!-- Flash messages -->
+            <%= render 'shared/dashboard/flash_messages' %>
+            <!-- Page content -->
+            <%= yield %>
+          </div>
+        </main>
+      </div>
+    </div>
+    <!-- Dashboard JavaScript -->
+    <script>
+      document.addEventListener('DOMContentLoaded', function() {
+        const mobileMenuButton = document.getElementById('mobile-menu-button');
+        const mobileMenuOverlay = document.getElementById('mobile-menu-overlay');
+        const closeSidebarButton = document.getElementById('close-sidebar');
+
+        // Open mobile menu
+        if (mobileMenuButton) {
+          mobileMenuButton.addEventListener('click', function() {
+            mobileMenuOverlay.classList.remove('hidden');
+          });
+        }
+
+        // Close mobile menu
+        function closeMobileMenu() {
+          mobileMenuOverlay.classList.add('hidden');
+        }
+
+        if (closeSidebarButton) {
+          closeSidebarButton.addEventListener('click', closeMobileMenu);
+        }
+
+        // Close menu when clicking overlay
+        mobileMenuOverlay.addEventListener('click', function(e) {
+          if (e.target === mobileMenuOverlay || e.target.closest('.bg-gray-600')) {
+            closeMobileMenu();
+          }
+        });
+
+        // Close menu on escape key
+        document.addEventListener('keydown', function(e) {
+          if (e.key === 'Escape') {
+            closeMobileMenu();
+          }
+        });
+      });
+    </script>
+  </body>
+</html>

@@ -1,0 +1,17 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  contact: one
+  training_course: one
+  lesson_slug: MyString
+  start_at: 2025-09-17 16:10:17
+  end_at: 2025-09-17 16:10:17
+  note: MyText
+
+two:
+  contact: two
+  training_course: two
+  lesson_slug: MyString
+  start_at: 2025-09-17 16:10:17
+  end_at: 2025-09-17 16:10:17
+  note: MyText

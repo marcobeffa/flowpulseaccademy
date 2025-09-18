@@ -1,0 +1,13 @@
+<!-- app/views/shared/_breadcrumb.html.erb -->
+<nav class="mb-6" aria-label="Breadcrumb">
+  <ol class="flex items-center gap-2 text-sm text-slate-500">
+    <% crumbs.each_with_index do |(label, path), i| %>
+      <% if path.present? && i < crumbs.size - 1 %>
+        <li><%= link_to label, path, class: "hover:text-slate-900" %></li>
+        <li class="text-slate-300">/</li>
+      <% else %>
+        <li class="text-slate-700 font-medium"><%= label %></li>
+      <% end %>
+    <% end %>
+  </ol>
+</nav>

@@ -1,0 +1,139 @@
+<%# Header + tabs %>
+<div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-6">
+  <div class="flex items-center justify-between">
+    <h1 class="text-2xl font-bold text-slate-900">Contatti</h1>
+    <%= link_to "Dashboard", dashboard_user_path, class: "text-sm text-blue-600 hover:text-blue-500" %>
+  </div>
+  <div class="mt-4 flex gap-2 rounded-xl bg-slate-100 p-1 w-fit">
+    <% tabs = {
+      "new"               => "Nuovi (#{@counts[:new]})",
+      "assigned_no_user"  => "Assegnati senza User (#{@counts[:assigned_no_user]})",
+      "assigned_with_user"=> "Assegnati con User (#{@counts[:assigned_with_user]})",
+      "all"               => "Tutti (#{@counts[:all]})"
+    } %>
+    <% tabs.each do |key, label| %>
+      <%= link_to label,
+          superadmin_contacts_path(tab: key),
+          class: "px-4 py-2 text-sm font-medium rounded-lg #{(@tab == key) ? 'bg-white shadow text-slate-900' : 'text-slate-600 hover:text-slate-900'}" %>
+    <% end %>
+  </div>
+</div>
+<%# Tabella %>
+<div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pb-12">
+  <div class="overflow-hidden rounded-2xl bg-white shadow">
+    <div class="px-6 py-4 border-b border-slate-200 flex items-center justify-between">
+      <h2 class="text-lg font-semibold text-slate-900">Elenco <span class="text-slate-500">(<%= @contacts.size %>)</span></h2>
+      <p class="text-sm text-slate-500">URL: /superadmin/indexcontact</p>
+    </div>
+    <div class="overflow-x-auto">
+      <table class="min-w-full divide-y divide-slate-200">
+        <thead class="bg-slate-50">
+          <tr>
+            <th class="px-4 py-3 text-left text-xs font-semibold text-slate-600">Nome e Cogn.</th>
+            <th class="px-4 py-3 text-left text-xs font-semibold text-slate-600">Email - Tel</th>
+            <th class="px-4 py-3 text-left text-xs font-semibold text-slate-600">Resp <br>
+              Referral</th>
+            <th class="px-4 py-3 text-left text-xs font-semibold text-slate-600">User</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-slate-100">
+          <% @contacts.each do |contact| %>
+            <tr class="hover:bg-slate-50/60 align-top">
+              <%= form_with model: contact,
+                    url: superadmin_contact_path(contact),
+                    method: :patch,
+                    local: true do |f| %>
+                <!-- Nome/Cognome + info -->
+                <td class="px-4 py-3 w-[28%]">
+                  <%= link_to superadmin_contact_path(contact) do %>
+                    <div class="text-xs text-slate-500 mb-1">
+                      <%= l(contact.created_at, format: :short) %> • ID <%= contact.id %>
+                    </div>
+                    <!-- Se vuoi in sola lettura, lascia così; se vuoi inline-edit, scommenta i text_field -->
+                    <div class="text-sm">
+                      <!--
+            <div class="mb-1">
+              <%= f.text_field :nome,
+                    class: "w-full rounded-md border-2 border-slate-200 bg-slate-50 px-3 py-2 text-sm focus:border-blue-500 focus:bg-white focus:outline-none" %>
+            </div>
+            <div>
+              <%= f.text_field :cognome,
+                    class: "w-full rounded-md border-2 border-slate-200 bg-slate-50 px-3 py-2 text-sm focus:border-blue-500 focus:bg-white focus:outline-none" %>
+            </div>
+            -->
+                      <div><%= contact.nome %></div>
+                      <div class="font-semibold"><%= contact.cognome %></div>
+                    </div>
+                  <% end %>
+                  <div class="mt-2">
+                    <%# badge tipo_utente (adatta ai tuoi enum) %>
+                    <% case contact.tipo_utente.to_s
+               when "utente" %>
+                      <span class="rounded-2xl bg-blue-600 px-2 py-0.5 text-xs font-semibold text-white">Educazione</span>
+                    <% when "professionista_benessere" %>
+                      <span class="rounded-2xl bg-green-600 px-2 py-0.5 text-xs font-semibold text-white">Benessere</span>
+                    <% when "professionista_salute" %>
+                      <span class="rounded-2xl bg-red-600 px-2 py-0.5 text-xs font-semibold text-white">Patologia</span>
+                    <% else %>
+                      <span class="rounded-2xl bg-slate-500 px-2 py-0.5 text-xs font-semibold text-white"><%= contact.tipo_utente %></span>
+                    <% end %>
+                  </div>
+                </td>
+                <!-- Email / Telefono -->
+                <td class="px-4 py-3 w-[26%]">
+                  <!-- Per edit inline scommenta:
+          <div class="mb-2">
+            <%= f.email_field :email,
+                  class: "w-full rounded-md border-2 border-slate-200 bg-slate-50 px-3 py-2 text-sm focus:border-blue-500 focus:bg-white focus:outline-none" %>
+          </div>
+          <div>
+            <%= f.telephone_field :telefono_facoltativo,
+                  class: "w-full rounded-md border-2 border-slate-200 bg-slate-50 px-3 py-2 text-sm focus:border-blue-500 focus:bg-white focus:outline-none" %>
+          </div>
+          -->
+                  <div class="text-sm"><%= contact.email %></div>
+                  <div class="text-sm text-slate-600"><%= contact.telefono_facoltativo.presence || "—" %></div>
+                </td>
+                <!-- Responsabile / Referral -->
+                <td class="px-4 py-3 w-[22%]">
+                  <% if contact.responsable_contact_id.present? %>
+                    <% ref = Contact.find_by(id: contact.responsable_contact_id) %>
+                    <div class="text-sm">
+                      Resp. ID: <%= contact.responsable_contact_id %>
+                      <% if ref %> • <span class="text-slate-600"><%= ref.email %></span><% end %>
+                    </div>
+                  <% else %>
+                    <div class="mt-2">
+                      <%= f.label :responsable_contact_id, "Imposta responsabile", class: "block text-xs font-semibold text-slate-600 mb-1" %>
+                      <%= f.select :responsable_contact_id,
+                  options_from_collection_for_select(@contacts.where.not(user_id: nil), :id, :email, contact.responsable_contact_id),
+                  { include_blank: "— Nessuno —" },
+                  class: "w-full rounded-md border-2 border-slate-200 bg-white px-3 py-2 text-sm focus:border-blue-500 focus:outline-none",
+                  onchange: "this.form.submit()" %>
+                    </div>
+                  <% end %>
+                </td>
+                <!-- User -->
+                <td class="px-4 py-3 w-[10%]">
+                  <% if contact.user.present? %>
+                    <span class="inline-flex items-center rounded-full bg-green-100 px-3 py-1 text-xs font-semibold text-green-800">
+                      <%= contact.user.email_address %>
+                    </span>
+                  <% else %>
+                    <div class="text-xs text-slate-500 mb-2">Nessun utente</div>
+                    <!-- Crea utente da contatto -->
+                    <%= form_with url: superadmin_create_user_path(contact, tab: @tab), method: :post, local: true do %>
+                      <%= submit_tag "Crea utente",
+                  data: { turbo_confirm: "Creare un nuovo utente con questa email e collegarlo?" },
+                  class: "rounded-md bg-orange-600 px-3 py-2 text-xs font-semibold text-white hover:bg-orange-700" %>
+                    <% end %>
+                  <% end %>
+                </td>
+              <% end %> <!-- /form riga -->
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

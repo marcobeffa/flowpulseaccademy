@@ -1,0 +1,92 @@
+<%= form_with(model: training_course, class: "contents") do |form| %>
+  <% if training_course.errors.any? %>
+    <div id="error_explanation" class="bg-red-50 text-red-500 px-3 py-2 font-medium rounded-md mt-3">
+      <h2><%= pluralize(training_course.errors.count, "error") %> prohibited this training_course from being saved:</h2>
+
+      <ul class="list-disc ml-6">
+        <% training_course.errors.each do |error| %>
+          <li><%= error.full_message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="my-5">
+    <%= form.label :course_slug %>
+    <%= form.text_field :course_slug, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": training_course.errors[:course_slug].none?, "border-red-400 focus:outline-red-600": training_course.errors[:course_slug].any?}] %>
+  </div>
+
+  <div class="my-5">
+    <%= form.label :registrations_open_at %>
+    <%= form.datetime_field :registrations_open_at, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": training_course.errors[:registrations_open_at].none?, "border-red-400 focus:outline-red-600": training_course.errors[:registrations_open_at].any?}] %>
+  </div>
+
+  <div class="my-5">
+    <%= form.label :registrations_close_at %>
+    <%= form.datetime_field :registrations_close_at, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": training_course.errors[:registrations_close_at].none?, "border-red-400 focus:outline-red-600": training_course.errors[:registrations_close_at].any?}] %>
+  </div>
+
+  <div class="my-5">
+    <%= form.label :package_slug %>
+    <%= form.text_field :package_slug, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": training_course.errors[:package_slug].none?, "border-red-400 focus:outline-red-600": training_course.errors[:package_slug].any?}] %>
+  </div>
+
+  <div class="my-5">
+    <%= form.label :tutor_role_id %>
+    <%= form.number_field :tutor_role_id, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": training_course.errors[:tutor_role_id].none?, "border-red-400 focus:outline-red-600": training_course.errors[:tutor_role_id].any?}] %>
+  </div>
+
+  <div class="my-5">
+    <%= form.label :teacher_role_id %>
+    <%= form.number_field :teacher_role_id, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": training_course.errors[:teacher_role_id].none?, "border-red-400 focus:outline-red-600": training_course.errors[:teacher_role_id].any?}] %>
+  </div>
+
+  <div class="my-5">
+    <%= form.label :trainee_role_id %>
+    <%= form.number_field :trainee_role_id, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": training_course.errors[:trainee_role_id].none?, "border-red-400 focus:outline-red-600": training_course.errors[:trainee_role_id].any?}] %>
+  </div>
+
+  <div class="my-5">
+    <%= form.label :venue_manager_role_id %>
+    <%= form.number_field :venue_manager_role_id, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": training_course.errors[:venue_manager_role_id].none?, "border-red-400 focus:outline-red-600": training_course.errors[:venue_manager_role_id].any?}] %>
+  </div>
+
+  <div class="my-5">
+    <%= form.label :location_name %>
+    <%= form.textarea :location_name, rows: 4, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": training_course.errors[:location_name].none?, "border-red-400 focus:outline-red-600": training_course.errors[:location_name].any?}] %>
+  </div>
+
+  <div class="my-5">
+    <%= form.label :location_address %>
+    <%= form.textarea :location_address, rows: 4, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": training_course.errors[:location_address].none?, "border-red-400 focus:outline-red-600": training_course.errors[:location_address].any?}] %>
+  </div>
+
+  <div class="my-5">
+    <%= form.label :location_gmaps %>
+    <%= form.text_field :location_gmaps, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": training_course.errors[:location_gmaps].none?, "border-red-400 focus:outline-red-600": training_course.errors[:location_gmaps].any?}] %>
+  </div>
+
+  <div class="my-5">
+    <%= form.label :lat %>
+    <%= form.text_field :lat, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": training_course.errors[:lat].none?, "border-red-400 focus:outline-red-600": training_course.errors[:lat].any?}] %>
+  </div>
+
+  <div class="my-5">
+    <%= form.label :lng %>
+    <%= form.text_field :lng, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": training_course.errors[:lng].none?, "border-red-400 focus:outline-red-600": training_course.errors[:lng].any?}] %>
+  </div>
+
+  <div class="my-5">
+    <%= form.label :location_phone %>
+    <%= form.text_field :location_phone, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": training_course.errors[:location_phone].none?, "border-red-400 focus:outline-red-600": training_course.errors[:location_phone].any?}] %>
+  </div>
+
+  <div class="my-5">
+    <%= form.label :participants_count %>
+    <%= form.number_field :participants_count, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": training_course.errors[:participants_count].none?, "border-red-400 focus:outline-red-600": training_course.errors[:participants_count].any?}] %>
+  </div>
+
+  <div class="inline">
+    <%= form.submit class: "w-full sm:w-auto rounded-md px-3.5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white inline-block font-medium cursor-pointer" %>
+  </div>
+<% end %>

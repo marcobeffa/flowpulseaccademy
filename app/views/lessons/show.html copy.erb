@@ -1,0 +1,30 @@
+<!-- app/views/lessons/show.html.erb -->
+<%= render "shared/breadcrumb", crumbs: {
+  "Corsi" => courses_path,
+  @course.titolo => course_path(@course.slug),
+  @lesson.title => nil
+} %>
+<div class="space-y-6">
+  <%= render "shared/card", title: @lesson.title, subtitle: @lesson.description do %>
+    <div class="flex items-center justify-between">
+      <div class="text-sm"><%= resource_links(url_content: @lesson.url_content, url_video: @lesson.url_video, url_pdf: @lesson.url_pdf) %></div>
+      <%= link_to "← Torna al corso", course_path(@course.slug), class: "text-sm text-slate-600 hover:text-slate-900" %>
+    </div>
+  <% end %>
+  <%= render "shared/card", title: "Schede", subtitle: "Indice della lezione" do %>
+    <% if @lesson.sheets.blank? %>
+      <p class="text-sm text-slate-500">Nessuna scheda per questa lezione.</p>
+    <% else %>
+      <ul class="space-y-2">
+        <% @lesson.sheets.each do |s| %>
+          <%= render "shared/list_row",
+            main_label: (s.title.presence || s.slug.humanize),
+            main_url:   course_lesson_sheet_path(@course.slug, @lesson.slug, s.slug),
+            badge:      s.type,
+            secondary:  (s.description.is_a?(String) ? s.description : nil),
+            right:      resource_links(url_content: s.url_content, url_video: s.url_video, url_pdf: s.url_pdf) %>
+        <% end %>
+      </ul>
+    <% end %>
+  <% end %>
+</div>

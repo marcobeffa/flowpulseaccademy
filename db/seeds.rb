@@ -7,3 +7,24 @@
 #   ["Action", "Comedy", "Drama", "Horror"].each do |genre_name|
 #     MovieGenre.find_or_create_by!(name: genre_name)
 #   end
+# db/seeds.rb
+u = User.find_or_initialize_by(email_address: "mario@mario.it")
+u.superadmin = true if u.respond_to?(:superadmin) # se hai la colonna
+u.password = "123456"
+u.password_confirmation = "123456"
+
+# garantisci sempre il contact
+if u.contact.blank?
+  u.build_contact(
+    nome: "Mario",
+    cognome: "Rossi",
+    email: "mario@mario.it",
+    tipo_utente: 0
+  )
+else
+  u.contact.email ||= u.email_address
+end
+
+u.save!
+
+puts "[seed] user=#{u.email_address} superadmin=#{u.try(:superadmin)} contact_id=#{u.contact&.id}"

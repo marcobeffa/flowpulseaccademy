@@ -24,27 +24,33 @@
       <script src="https://cdn.tailwindcss.com"></script>
   %>
     <style>
-      /* Animazioni senza plugin */
-      @keyframes fade-in { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
-      @keyframes slide-up { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
-      @keyframes float { 0% { transform: translateY(0); } 50% { transform: translateY(-8px);} 100% { transform: translateY(0);} }
-
-      .animate-fade-in { animation: fade-in .6s ease-out both; }
-      .animate-slide-up { animation: slide-up .7s ease-out both; }
+      .text-shadow { text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5); }
+      .animate-fade-in { opacity: 0; animation: fadeIn 1s ease-in-out forwards; }
+      .animate-slide-up { transform: translateY(20px); opacity: 0; animation: slideUp 1s ease-in-out forwards; }
       .animate-float { animation: float 6s ease-in-out infinite; }
-      .delay-300 { animation-delay: .3s; }
-      .delay-1000 { animation-delay: 1s; }
+      @keyframes fadeIn { to { opacity: 1; } }
+      @keyframes slideUp { to { transform: translateY(0); opacity: 1; } }
+      @keyframes float { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-20px); } }
+      .delay-300 { animation-delay: 300ms; }
 
-      /* Rispetta utenti con riduzione movimento */
-      @media (prefers-reduced-motion: reduce) {
-        .animate-fade-in, .animate-slide-up, .animate-float { animation: none !important; }
-      }
-
-      /* Offset per header fisso quando si usa scrollIntoView */
-      section { scroll-margin-top: 5.5rem; }
+          /* Animazioni senza plugin */
+          @keyframes fade-in { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+          @keyframes slide-up { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
+          @keyframes float { 0% { transform: translateY(0); } 50% { transform: translateY(-8px);} 100% { transform: translateY(0);} }
+          .animate-fade-in { animation: fade-in .6s ease-out both; }
+          .animate-slide-up { animation: slide-up .7s ease-out both; }
+          .animate-float { animation: float 6s ease-in-out infinite; }
+          .delay-300 { animation-delay: .3s; }
+          .delay-1000 { animation-delay: 1s; }
+          /* Rispetta utenti con riduzione movimento */
+          @media (prefers-reduced-motion: reduce) {
+          .animate-fade-in, .animate-slide-up, .animate-float { animation: none !important; }
+          }
+          /* Offset per header fisso quando si usa scrollIntoView */
+          section { scroll-margin-top: 5.5rem; }
     </style>
   </head>
-  <body class="bg-white text-gray-900">
+  <body class="bg-blue-800">
     <!-- Navigation -->
     <nav class="fixed top-0 w-full bg-white/90 backdrop-blur border-b border-gray-100 z-50">
       <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -55,13 +61,19 @@
           <!-- Desktop -->
           <div class="hidden md:block">
             <div class="ml-10 flex items-baseline space-x-8">
+              <%= link_to "Corso Igiene posturale", course_path(id: "igiene_posturale"), class: "px-3 py-2 text-sm font-medium text-gray-600 hover:text-blue-600 transition-colors" %>
               <%= link_to "Il Programma", root_path(anchor: "programma"), class: "px-3 py-2 text-sm font-medium text-gray-600 hover:text-blue-600 transition-colors" %>
               <%= link_to "Modalità", root_path(anchor: "modalita"), class: "px-3 py-2 text-sm font-medium text-gray-600 hover:text-blue-600 transition-colors" %>
               <%= link_to "Il Tuo Profilo", root_path(anchor: "profili"), class: "px-3 py-2 text-sm font-medium text-gray-600 hover:text-blue-600 transition-colors" %>
               <%= link_to "Insegnanti", insegnanti_path,
               class: "px-3 py-2 text-sm font-medium text-gray-600 hover:text-blue-600 transition-colors" %>
-              <%= link_to "Inizia Ora", new_contact_path,
+              <% if authenticated? %>
+                <%= link_to "Vai alla dashboard", #dashboard_user_path,
+                  class: "rounded-full bg-blue-600 px-6 py-2 text-sm font-semibold text-white shadow-lg transition-all duration-300 hover:bg-blue-700 hover:shadow-xl" %>
+              <% else %>
+                <%= link_to "Inizia Ora", new_contact_path,
               class: "rounded-full bg-blue-600 px-6 py-2 text-sm font-semibold text-white shadow-lg transition-all duration-300 hover:bg-blue-700 hover:shadow-xl" %>
+              <% end %>
             </div>
           </div>
           <!-- Mobile toggle -->
@@ -89,5 +101,28 @@
       </div>
     </nav>
     <%= yield %>
+    <script>
+      // Smooth scrolling con offset header
+      const HEADER_OFFSET = 88; // ~5.5rem
+      document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function (e) {
+          const href = this.getAttribute('href');
+          if (!href || href === '#') return;
+          const target = document.querySelector(href);
+          if (!target) return;
+
+          e.preventDefault();
+          const top = target.getBoundingClientRect().top + window.pageYOffset - HEADER_OFFSET;
+          window.scrollTo({ top, behavior: 'smooth' });
+        });
+      });
+
+      // IntersectionObserver per fade-in
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => { if (entry.isIntersecting) entry.target.classList.add('animate-fade-in'); });
+      }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
+
+      document.querySelectorAll('.group, .relative').forEach(el => observer.observe(el));
+    </script>
   </body>
 </html>

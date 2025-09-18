@@ -1,0 +1,49 @@
+<div class="mx-auto max-w-5xl px-6 py-10">
+  <h1 class="text-3xl font-bold"><%= @course_title %></h1>
+  <% if @course_desc.present? %>
+    <p class="mt-2 text-gray-600"><%= @course_desc %></p>
+  <% end %>
+  <div class="mt-6">
+    <% if @course_cover.present? %>
+      <img src="<%= @course_cover %>" alt="Copertina corso" class="w-full rounded-xl shadow" />
+    <% else %>
+      <%= youtube_iframe(@course_video) %>
+    <% end %>
+  </div>
+  <div class="mt-6 flex gap-4">
+    <% if @course_pdf.present? %>
+      <a href="<%= @course_pdf %>" target="_blank" class="inline-flex items-center px-4 py-2 rounded-lg border hover:bg-gray-50">PDF</a>
+    <% end %>
+    <% if @course_video.present? %>
+      <a href="<%= @course_video %>" target="_blank" class="inline-flex items-center px-4 py-2 rounded-lg border hover:bg-gray-50">Video</a>
+    <% end %>
+  </div>
+  <h2 class="mt-10 text-2xl font-semibold">Lezioni</h2>
+  <div class="mt-4 grid md:grid-cols-2 gap-6">
+    <% @lessons.each do |l| %>
+      <div class="rounded-xl border p-4 hover:shadow">
+        <div class="mb-3">
+          <% if l["url_copertina"].present? %>
+            <img src="<%= l["url_copertina"] %>" alt="Copertina <%= l["title"] %>" class="w-full rounded-lg" />
+          <% else %>
+            <%= youtube_iframe(l["url_video"], css: "w-full aspect-video rounded-lg") %>
+          <% end %>
+        </div>
+        <h3 class="text-lg font-bold"><%= l["title"] %></h3>
+        <% if l["description"].present? %>
+          <p class="text-gray-600 mt-1"><%= Array(l["description"]).join(" ") %></p>
+        <% end %>
+        <div class="mt-3 flex flex-wrap gap-3">
+          <% if l["url_pdf"].present? %>
+            <a href="<%= l["url_pdf"] %>" target="_blank" class="px-3 py-1 rounded border text-sm">PDF</a>
+          <% end %>
+          <% if l["url_video"].present? %>
+            <a href="<%= l["url_video"] %>" target="_blank" class="px-3 py-1 rounded border text-sm">Video</a>
+          <% end %>
+          <%= link_to "Apri lezione", course_lesson_path(@course_slug, l["slug"]),
+                      class: "px-3 py-1 rounded border text-sm hover:bg-gray-50" %>
+        </div>
+      </div>
+    <% end %>
+  </div>
+</div>

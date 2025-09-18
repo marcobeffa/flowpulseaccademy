@@ -1,0 +1,22 @@
+<!-- app/views/courses/admin_index.html.erb -->
+<h1>Gestione Corsi (YAML)</h1>
+<table>
+  <thead>
+    <tr>
+      <th>ID</th>
+      <th>Titolo</th>
+      <th>Descrizione</th>
+      <th>Lezioni</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% @courses.each do |course| %>
+      <tr>
+        <td><%= course.id %></td>
+        <td><%= course.titolo %></td>
+        <td><%= course.descrizione %></td>
+        <td><%= course.lezioni.size %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>

@@ -1,0 +1,29 @@
+<!-- app/views/sheets/show.html.erb -->
+<%= render "shared/breadcrumb", crumbs: {
+  "Corsi" => courses_path,
+  @course.titolo => course_path(@course.slug),
+  @lesson.title => course_lesson_path(@course.slug, @lesson.slug),
+  (@sheet.title.presence || @sheet.slug.humanize) => nil
+} %>
+<div class="space-y-6">
+  <%= render "shared/card", title: (@sheet.title.presence || @sheet.slug.humanize) do %>
+    <div class="flex items-center justify-between">
+      <%= type_badge(@sheet.type) %>
+      <div class="text-sm"><%= resource_links(url_content: @sheet.url_content, url_video: @sheet.url_video, url_pdf: @sheet.url_pdf) %></div>
+    </div>
+    <div class="mt-4 prose max-w-none">
+      <% if @sheet.description.is_a?(Array) %>
+        <ul class="list-disc pl-5">
+          <% @sheet.description.each do |d| %>
+            <li><%= d %></li>
+          <% end %>
+        </ul>
+      <% else %>
+        <p><%= @sheet.description %></p>
+      <% end %>
+    </div>
+    <div class="mt-6">
+      <%= link_to "← Torna alla lezione", course_lesson_path(@course.slug, @lesson.slug), class: "text-sm text-slate-600 hover:text-slate-900" %>
+    </div>
+  <% end %>
+</div>

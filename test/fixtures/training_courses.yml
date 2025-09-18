@@ -1,0 +1,35 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  course_slug: MyString
+  registrations_open_at: 2025-09-17 15:08:49
+  registrations_close_at: 2025-09-17 15:08:49
+  package_slug: MyString
+  tutor_role_id: 1
+  teacher_role_id: 1
+  trainee_role_id: 1
+  venue_manager_role_id: 1
+  location_name: MyText
+  location_address: MyText
+  location_gmaps: MyString
+  lat: 1.5
+  lng: 1.5
+  location_phone: MyString
+  participants_count: 1
+
+two:
+  course_slug: MyString
+  registrations_open_at: 2025-09-17 15:08:49
+  registrations_close_at: 2025-09-17 15:08:49
+  package_slug: MyString
+  tutor_role_id: 1
+  teacher_role_id: 1
+  trainee_role_id: 1
+  venue_manager_role_id: 1
+  location_name: MyText
+  location_address: MyText
+  location_gmaps: MyString
+  lat: 1.5
+  lng: 1.5
+  location_phone: MyString
+  participants_count: 1

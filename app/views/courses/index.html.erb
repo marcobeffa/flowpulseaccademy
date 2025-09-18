@@ -1,0 +1,23 @@
+<!-- app/views/courses/index.html.erb -->
+<%= render "shared/breadcrumb", crumbs: { "Corsi" => nil } %>
+<div class="mb-6 flex items-center justify-between">
+  <h1 class="text-2xl font-bold text-slate-900">Corsi</h1>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+  <% @courses.each do |c| %>
+    <%= render "shared/card", title: c.titolo, subtitle: (c.professional_roles.presence && "Ruoli: #{c.professional_roles.join(", ")}") do %>
+      <div class="space-y-3">
+        <% if c.taxonomy_path.present? %>
+          <p class="text-sm text-slate-500">Percorso: <span class="font-medium text-slate-700"><%= c.taxonomy_path.join(" / ") %></span></p>
+        <% end %>
+        <div class="text-sm">
+          <%= resource_links(url_content: c.url_content, url_video: c.url_video, url_pdf: c.url_pdf) %>
+        </div>
+        <div class="pt-2">
+          <%= link_to "Apri corso", course_path(c.slug),
+              class: "inline-flex items-center rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm font-medium hover:bg-slate-50" %>
+        </div>
+      </div>
+    <% end %>
+  <% end %>
+</div>
