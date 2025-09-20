@@ -24,7 +24,7 @@ Rails.application.routes.draw do
 
   get "categories/*taxonomy", to: "courses#index", as: :category
 
-    resources :courses, only: [ :show ], param: :slug do
+    resources :courses, only: [ :show, :index ], param: :slug do
       resources :lessons, only: [ :show ], param: :slug do
         resources :sheets, only: %i[show]
       end
