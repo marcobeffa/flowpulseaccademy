@@ -1,0 +1,61 @@
+<div class="max-w-5xl mx-auto py-10 px-4">
+  <div class="flex items-center justify-between mb-6">
+    <h1 class="text-2xl font-bold">Liste</h1>
+    <%= form_with model: @list, url: generaimpresa_lists_path, local: true, class: "flex items-center gap-2" do |f| %>
+      <%= f.text_field :name, placeholder: "Nome nuova lista", class: "px-3 py-2 border border-gray-300 rounded-lg text-sm min-w-56" %>
+      <%= f.submit "Nuova lista", class: "px-3 py-2 bg-green-600 text-white rounded-lg text-sm hover:bg-green-700" %>
+    <% end %>
+  </div>
+  <div class="mb-4">
+    <input id="filter-input" type="search" placeholder="Cerca per nome…" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm">
+  </div>
+  <% if @lists.any? %>
+    <div class="overflow-hidden bg-white border border-gray-200 rounded-xl">
+      <table class="min-w-full divide-y divide-gray-200">
+        <thead class="bg-gray-50">
+          <tr>
+            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nome</th>
+            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Voci</th>
+            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Aggiornata</th>
+            <th class="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Azioni</th>
+          </tr>
+        </thead>
+        <tbody id="lists-tbody" class="bg-white divide-y divide-gray-200">
+          <% @lists.each do |list| %>
+            <% count = @item_counts[list.id] || 0 %>
+            <tr data-name="<%= list.name.to_s.downcase %>" class="row">
+              <td class="px-4 py-3">
+                <%= link_to  generaimpresa_list_path(list) do %>
+                  <div class="font-medium text-gray-900"><%= list.name.presence || "Senza nome" %></div>
+                  <div class="text-xs text-gray-500">ID: <%= list.id %></div>
+                <% end %>
+              </td>
+              <td class="px-4 py-3 text-gray-700"><%= count %></td>
+              <td class="px-4 py-3 text-gray-700"><%= list.updated_at&.strftime("%d/%m/%Y %H:%M") %></td>
+              <td class="px-4 py-3">
+                <div class="flex justify-end gap-2">
+                  <%= link_to "Ordina", order_generaimpresa_list_path(list), class: "px-3 py-1.5 border border-gray-300 rounded-lg text-sm hover:border-blue-400" %>
+                  <%= link_to "JSON", order_generaimpresa_list_path(list, format: :json), class: "px-3 py-1.5 border border-gray-300 rounded-lg text-sm hover:border-gray-400" %>
+                </div>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  <% else %>
+    <div class="p-6 border border-dashed border-gray-300 rounded-xl text-center text-gray-600">
+      Nessuna lista presente. Crea la prima con il form in alto.
+    </div>
+  <% end %>
+</div>
+<script>
+  // Filtro client-side per nome
+  document.getElementById('filter-input')?.addEventListener('input', function(){
+    const q = this.value.trim().toLowerCase();
+    document.querySelectorAll('#lists-tbody .row').forEach(tr => {
+      const name = tr.dataset.name || "";
+      tr.style.display = name.includes(q) ? "" : "none";
+    });
+  });
+</script>

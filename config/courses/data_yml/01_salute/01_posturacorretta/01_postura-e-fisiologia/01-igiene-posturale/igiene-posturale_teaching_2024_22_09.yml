@@ -1,0 +1,216 @@
+---
+spec_version: "1.0"
+
+course:
+  titolo: "Igiene Posturale"
+  description: "Corso per riattivare le articolazioni e togliere le tensioni da collo e spalle"
+  url_copertina: "https://ik.imagekit.io/posturacorretta/corsi/igiene_posturale/copertina_igiene_posturale.png?updatedAt=1714122305648"
+  # Tassonomia "brand/prodotto/percorso" (evita i domini qui)
+  content_slug: "corso-igiene-posturale"
+  online:
+    preparatory_courses:
+      - slug: "courses/flowpulse/salute/posturacorretta/01-iscrizione-profilazione.yml" # da cercare in iscrizione_profilazione_dd_mm_yyyy
+        title: "Iscrizione e Profilazione"
+        description: "Prima di iniziare"
+        shared: true
+    lessons:
+      - slug: igiene_posturale_l1
+        title: "Lezione 1"
+        description: "Mobilizzazione articolare"
+        chapter: false
+        url_copertina: ""
+        content_slug: ""
+
+      - slug: rigidità
+        title: ""
+        description: "Evitare rigidità: capsula ricca di recettori → riequilibrio schema motorio."
+        chapter: false
+        url_copertina: ""
+        content_slug: ""
+
+      - slug: cartilagine_1
+        title: ""
+        description: "Cartilagine come spugna: sinoviale nutre con compressione/decompressione."
+        chapter: false
+        url_copertina: ""
+        content_slug: ""
+        
+      - slug: cartilagine_2
+        title: ""
+        description: "Concetto palude: pressione negativa attira tossine se non muoviamo."
+        chapter: false
+        url_copertina: ""
+        content_slug: ""
+
+      - slug: cartilagine_3
+        title: ""
+        description: "Sistema linfatico: continuità dei liquidi supportata dalla mobilità."
+        chapter: false
+        url_copertina: ""
+        content_slug: ""
+        
+      - slug: cartilagine_4
+        title: ""
+        description: "Rigido/Lasso: percepire stato e adattare il lavoro."
+        chapter: false
+        url_copertina: ""
+        content_slug: ""
+        
+      - slug: pratica_mobilizzazioni
+        type: pratica_cosa
+        title: ""
+        description: ["Mobilizzazione delle principali articolazioni."]
+        chapter: false
+        url_copertina: ""
+        content_slug: ""
+        url_pdf: ""
+        url_video: ""
+
+      - slug: pratica_routine
+        title: ""
+        description: "Routine semplice e memorizzabile, al ritmo del respiro (parasimpatico), per 4 settimane."
+        chapter: false
+        url_copertina: ""
+        content_slug: ""
+        url_pdf: ""
+        url_video: ""
+
+      - slug: igiene_posturale_l2
+        title: ""
+        description: "Togliere tensioni da cingoli ed estremità"
+        chapter: false
+        url_copertina: ""
+        content_slug: ""
+
+      - slug: igiene_posturale_l3
+        title: "Lezione 3"
+        description: "Scaricare il sistema nervoso"
+        chapter: false
+        url_copertina: ""
+        content_slug: ""
+
+      - slug: igiene_posturale_l4
+        title: "Lezione 4"
+        description: "Ricarica energetica: riattiva i recettori cutanei"
+        chapter: false
+        url_copertina: ""
+        content_slug: ""
+
+      - slug: igiene_posturale_chiusura
+        title: "Chiusura"
+        description: "Feedback e prosecuzione del programma"
+        chapter: false
+        url_copertina: ""
+        content_slug: ""
+
+  academy:
+    professional_roles:
+      - utente
+      - insegnante
+      - tutor
+      - tirocinante
+      - segnalatore
+      - responsabile_sala
+      - admin_posturacorretta
+
+    teacher_program: 
+        n_lessons: 4
+        duration_lesson_min: 60
+        total_duration_min: 240
+        n_practice_sessions: 20
+        duration_practice_min: 15
+        total_practice_min: 300
+        total_course_duration_weeks: 4
+        access_duration_days: 60
+        certificate: false
+        follow_up: false
+        community: false
+        live_lessons: true
+        recorded_lessons: false
+        pdf_material: true
+        video_material: true
+        other_material: ["Palline", "Bastone"]
+        platform_support: true
+        min_participants: 8
+        max_participants: 20
+        referral_program: true
+    self_program: 
+
+    
+
+    plans:
+      - slug: autonomo_online
+        canale: online
+        modalita: autonomia
+        prezzo_eur: 80
+        attivo: true
+        revenue_shares:
+          insegnante: 60
+          admin_posturacorretta: 40
+
+      - slug: pro_online_singolo
+        canale: online
+        modalita: professionista_singolo
+        prezzo_eur: 150
+        attivo: true
+        revenue_shares:
+          insegnante: 50
+          tutor: 20
+          admin_posturacorretta: 20
+          segnalatore: 10
+
+      - slug: pro_online_gruppo
+        canale: online
+        modalita: professionista_gruppo
+        prezzo_eur: 100
+        attivo: true
+        revenue_shares:
+          insegnante: 40
+          tutor: 30
+          admin_posturacorretta: 20
+          segnalatore: 10
+
+      - slug: pro_presenza_singolo
+        canale: presenza
+        modalita: professionista_singolo
+        prezzo_eur: 150
+        attivo: true
+        revenue_shares:
+          insegnante: 50
+          responsabile_sala: 20
+          admin_posturacorretta: 20
+          segnalatore: 10
+
+      - slug: pro_presenza_gruppo
+        canale: presenza
+        modalita: professionista_gruppo
+        prezzo_eur: 120
+        attivo: true
+        revenue_shares:
+          insegnante: 35
+          tutor: 30
+          responsabile_sala: 15
+          admin_posturacorretta: 10
+          segnalatore: 10
+        steps_operativi:
+          - trovare_il_tutor
+          - trovare_responsabile_sala_o_centro
+          - trovare_l_insegnante
+          - stabilire_date_corso
+          - outreach_medici_farmacie_pr
+          - referente_accesso_centro
+          - fornire_materiale_segnalatore_qr
+          - fornire_link_iscrizione
+          - preparare_materiale_clienti_pdf_palline_bastone_libretto_facoltativo
+          - profilazione_clienti_per_idoneita_intro
+          - contattare_clienti_per_conferma
+          - lezione_introduzione_e_scrematura
+          - regola_avvio_corso_min_8_iscrizioni_pagamento_entra_3_giorni_iscrizione_chiusura_iscrizioni_7_giorni_prima
+          - raccogliere_pagamenti_online_offline_sumup
+          - automatizzare_fatture
+          - pagare_professionisti
+          - garantire_presenza_partecipanti
+          - raccogliere_feedback_e_issue
+          - chiudere_gruppo_e_correzioni
+          - referral_rule_segnalatore_20_se_porta_un_amico
+

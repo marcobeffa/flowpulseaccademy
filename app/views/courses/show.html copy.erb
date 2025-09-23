@@ -1,5 +1,5 @@
 <!-- app/views/courses/show.html.erb -->
-<%= render "shared/breadcrumb", crumbs: { "Corsi" => courses_path, @course.titolo => nil } %>
+<%= render "shared/breadcrumb", crumbs: { "Corsi" => onlinecourses_courses_path, @course.titolo => nil } %>
 <div class="space-y-6">
   <%= render "shared/card", title: @course.titolo do %>
     <div class="grid md:grid-cols-2 gap-6">

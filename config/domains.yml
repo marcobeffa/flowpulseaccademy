@@ -1,0 +1,296 @@
+
+# config/domains.yml
+
+services:
+  - key: onlinecourses
+    subdomain: flowpulse
+    original_domain: flowpulse.net
+    title: "Corsi Online"
+    description: "Catalogo corsi online"
+    image_url: null
+    state: active
+    data_source: yml            # "yml" or "db"
+    yml_root: "config/courses"  # used if data_source=yml
+    db_table: null              # used if data_source=db
+    allow_root_domain_path: false  # if true, also mount on base domain path (e.g. flowpulse.net/onlinecourses)
+
+  - key: teaching
+    subdomain: flowpulse
+    original_domain: flowpulse.net
+    title: "Corsi con insegnanti"
+    description: "Per imparare e certificare il tuo apprendimento"
+    image_url: null
+    state: develop
+    data_source: yml
+    yml_root: "config/teaching"
+    db_table: null
+    allow_root_domain_path: false
+
+  - key: questionnaire
+    subdomain: flowpulse
+    original_domain: flowpulse.net
+    title: "Questionari e Valutazioni"
+    description: "Le tue valutazioni"
+    image_url: null
+    state: develop
+    data_source: db
+    yml_root: null
+    db_table: questionnaires
+    allow_root_domain_path: false
+
+  - key: blog
+    subdomain: flowpulse
+    original_domain: flowpulse.net
+    title: "Accademia"
+    description: "I tuoi contenuti"
+    image_url: null
+    state: develop
+    data_source: db
+    yml_root: null
+    db_table: posts
+    allow_root_domain_path: false
+
+
+# A) Primary domains (each with a clear landing and SEO)
+#    active_services is a list of service keys enabled on that domain.
+
+domains:
+  - host: flowpulse.net
+    aliases: [ "www.flowpulse.net" ]
+    description: "La prima accademia salute, lavoro e crescita personale, basata sulla nostra fisiologia!"
+    url_landing: "domains/flowpulse#home"   # controller#action OR a template path OR an absolute URL
+    favicon_url: "/favicons/flowpulse/favicon.ico"
+    active_services: [ onlinecourses, teaching, questionnaire, blog ]
+    seo:
+      title: "Flowpulse — Accademia salute, lavoro e crescita"
+      description: "Percorsi, corsi e strumenti per la salute e la crescita personale/professionale."
+      image_url: "/og/flowpulse.png"
+      theme_color: "#f5b800"
+      canonical_host: "flowpulse.net"        # used for canonical tags when on this domain
+      twitter:
+        card: "summary_large_image"
+        site: "@flowpulse"
+        creator: "@flowpulse"
+      og:
+        type: "website"
+        locale: "it_IT"
+      apple:
+        touch_icon_url: "/apple-touch-icon.png"
+        mask_icon_url: "/safari-pinned-tab.svg"
+        tile_color: "#f5b800"
+
+  - host: posturacorretta.org
+    aliases: [ "www.posturacorretta.org" ]
+    description: "Postura, prevenzione e movimento"
+    url_landing: "domains/posturacorretta#home"
+    favicon_url: "/favicons/posturacorretta/favicon.ico"
+    active_services: [ onlinecourses, blog ]
+    seo:
+      title: "PosturaCorretta — Prevenzione e movimento"
+      description: "Linee guida e programmi per la postura e la prevenzione."
+      image_url: "/og/posturacorretta.png"
+      theme_color: "#1e40af"
+      canonical_host: "posturacorretta.org"
+      twitter:
+        card: "summary_large_image"
+        site: "@posturacorretta"
+        creator: "@posturacorretta"
+      og:
+        type: "website"
+        locale: "it_IT"
+      apple:
+        touch_icon_url: "/apple-touch-icon.png"
+        mask_icon_url: "/safari-pinned-tab.svg"
+        tile_color: "#1e40af"
+
+  - host: igieneposturale.it
+    aliases: [ "www.igieneposturale.it" ]
+    description: "Liberati da rigidità e tensione"
+    url_landing: "domains/igieneposturale#home"
+    favicon_url: "/favicons/igieneposturale/favicon.ico"
+    active_services: [ onlinecourses ]
+    seo:
+      title: "Igiene Posturale — Programma ufficiale"
+      description: "Riattiva le articolazioni e togli tensioni da collo e spalle."
+      image_url: "/og/igieneposturale.png"
+      theme_color: "#0ea5e9"
+      canonical_host: "igieneposturale.it"
+      twitter:
+        card: "summary_large_image"
+        site: "@posturacorretta"
+        creator: "@posturacorretta"
+      og:
+        type: "website"
+        locale: "it_IT"
+      apple:
+        touch_icon_url: "/apple-touch-icon.png"
+        mask_icon_url: "/safari-pinned-tab.svg"
+        tile_color: "#0ea5e9"
+
+  - host: stopaldolore.org
+    aliases: [ "www.stopaldolore.org" ]
+    description: "Le linee guida e gli strumenti per risolvere il tuo dolore!"
+    url_landing: "domains/stopaldolore#home"
+    favicon_url: "/favicons/stopaldolore/favicon.ico"
+    active_services: [ onlinecourses, blog ]
+    seo:
+      title: "Stop al Dolore — Linee guida e strumenti"
+      description: "Dalla valutazione al percorso: risorse per il dolore acuto e cronico."
+      image_url: "/og/stopaldolore.png"
+      theme_color: "#dc2626"
+      canonical_host: "stopaldolore.org"
+      twitter:
+        card: "summary_large_image"
+        site: "@posturacorretta"
+        creator: "@posturacorretta"
+      og:
+        type: "website"
+        locale: "it_IT"
+      apple:
+        touch_icon_url: "/apple-touch-icon.png"
+        mask_icon_url: "/safari-pinned-tab.svg"
+        tile_color: "#dc2626"
+
+  - host: benessereintegrato.it
+    aliases: [ "www.benessereintegrato.it" ]
+    description: "Le linee guida per costruire il tuo percorso della salute"
+    url_landing: "domains/benessereintegrato#home"
+    favicon_url: "/favicons/benessereintegrato/favicon.ico"
+    active_services: [ blog ]
+    seo:
+      title: "Benessere Integrato — Percorsi concreti"
+      description: "Prevenzione e stili di vita integrati con professionisti."
+      image_url: "/og/benessereintegrato.png"
+      theme_color: "#16a34a"
+      canonical_host: "benessereintegrato.it"
+      twitter:
+        card: "summary_large_image"
+        site: "@posturacorretta"
+        creator: "@posturacorretta"
+      og:
+        type: "website"
+        locale: "it_IT"
+      apple:
+        touch_icon_url: "/apple-touch-icon.png"
+        mask_icon_url: "/safari-pinned-tab.svg"
+        tile_color: "#16a34a"
+
+  - host: generaimpresa.it
+    aliases: [ "www.generaimpresa.it" ]
+    description: "Impresa, strumenti e processi"
+    url_landing: "domains/generaimpresa#home"
+    favicon_url: "/favicons/generaimpresa/favicon.ico"
+    active_services: []
+    seo:
+      title: "GeneraImpresa — Strumenti e processi"
+      description: "Progetti, liste, ticket e flussi per fare impresa."
+      image_url: "/og/generaimpresa.png"
+      theme_color: "#9333ea"
+      canonical_host: "generaimpresa.it"
+      twitter:
+        card: "summary_large_image"
+        site: "@flowpulse"
+        creator: "@flowpulse"
+      og:
+        type: "website"
+        locale: "it_IT"
+      apple:
+        touch_icon_url: "/apple-touch-icon.png"
+        mask_icon_url: "/safari-pinned-tab.svg"
+        tile_color: "#9333ea"
+
+  - host: 1impegno.it
+    aliases: [ "www.1impegno.it" ]
+    description: "Gestione delle risorse"
+    url_landing: "domains/impegno#home"
+    favicon_url: "/favicons/1impegno/favicon.ico"
+    active_services: []
+    seo:
+      title: "1Impegno — Pianifica e realizza"
+      description: "Calendar, focus e routine per il tuo lavoro e benessere."
+      image_url: "/og/1impegno.png"
+      theme_color: "#0ea5e9"
+      canonical_host: "1impegno.it"
+      twitter:
+        card: "summary_large_image"
+        site: "@flowpulse"
+        creator: "@flowpulse"
+      og:
+        type: "website"
+        locale: "it_IT"
+      apple:
+        touch_icon_url: "/apple-touch-icon.png"
+        mask_icon_url: "/safari-pinned-tab.svg"
+        tile_color: "#0ea5e9"
+
+  - host: rails4b.com
+    aliases: [ "www.rails4b.com" ]
+    description: "Sviluppo app Ruby on Rails"
+    url_landing: "domains/rails4b#home"
+    favicon_url: "/favicons/rails4b/favicon.ico"
+    active_services: []
+    seo:
+      title: "Rails4B — Rails for Business"
+      description: "Toolkit e guide per imprenditori che usano Rails."
+      image_url: "/og/rails4b.png"
+      theme_color: "#111827"
+      canonical_host: "rails4b.com"
+      twitter:
+        card: "summary_large_image"
+        site: "@rails4b"
+        creator: "@rails4b"
+      og:
+        type: "website"
+        locale: "it_IT"
+      apple:
+        touch_icon_url: "/apple-touch-icon.png"
+        mask_icon_url: "/safari-pinned-tab.svg"
+        tile_color: "#111827"
+
+  - host: markpostura.com
+    aliases: [ "www.markpostura.com", "markpostura.it", "www.markpostura.it" ]
+    description: "La pagina di Mark Postura"
+    url_landing: "domains/markpostura#home"
+    favicon_url: "/favicons/markpostura/favicon.ico"
+    active_services: []
+    seo:
+      title: "Mark Postura — Progetti e visione"
+      description: "Contenuti personali, idee e progetti correlati a PosturaCorretta."
+      image_url: "/og/markpostura.png"
+      theme_color: "#0f766e"
+      canonical_host: "markpostura.com"
+      twitter:
+        card: "summary_large_image"
+        site: "@posturacorretta"
+        creator: "@posturacorretta"
+      og:
+        type: "website"
+        locale: "it_IT"
+      apple:
+        touch_icon_url: "/apple-touch-icon.png"
+        mask_icon_url: "/safari-pinned-tab.svg"
+        tile_color: "#0f766e"
+
+  - host: ilgiardinodelcorpo.it
+    aliases: [ "www.ilgiardinodelcorpo.it" ]
+    description: "Per l'evoluzione armonica dell'essere umano"
+    url_landing: "domains/ilgiardinodelcorpo#home"
+    favicon_url: "/favicons/ilgiardinodelcorpo/favicon.ico"
+    active_services: [ blog ]
+    seo:
+      title: "Il Giardino del Corpo — Evoluzione armonica"
+      description: "Spazio di ricerca tra corpo, coscienza e vita."
+      image_url: "/og/ilgiardinodelcorpo.png"
+      theme_color: "#065f46"
+      canonical_host: "ilgiardinodelcorpo.it"
+      twitter:
+        card: "summary_large_image"
+        site: "@posturacorretta"
+        creator: "@posturacorretta"
+      og:
+        type: "website"
+        locale: "it_IT"
+      apple:
+        touch_icon_url: "/apple-touch-icon.png"
+        mask_icon_url: "/safari-pinned-tab.svg"
+        tile_color: "#065f46"

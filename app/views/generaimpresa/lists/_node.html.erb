@@ -1,0 +1,22 @@
+<% title = node[:title].to_s %>
+<li class="node" data-title="<%= title.downcase %>">
+  <div class="node-row">
+    <% has_children = node[:children].present? %>
+    <% if has_children %>
+      <button type="button" class="toggle-btn" data-toggle>▼</button>
+    <% else %>
+      <span class="toggle-btn" aria-hidden="true" style="opacity:.4; cursor:default;">•</span>
+    <% end %>
+    <span class="node-num" aria-label="numero"></span>
+    <div class="flex-1 min-w-0">
+      <div class="node-title"><%= title.presence || "(senza titolo)" %></div>
+    </div>
+  </div>
+  <% if has_children %>
+    <ul class="list-none m-0 mt-1 p-0">
+      <% node[:children].each do |child| %>
+        <%= render partial: "node", locals: { node: child } %>
+      <% end %>
+    </ul>
+  <% end %>
+</li>

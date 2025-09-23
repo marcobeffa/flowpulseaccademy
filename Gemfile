@@ -66,3 +66,4 @@ end
 
 gem "administrate", github: "thoughtbot/administrate"
 gem "geocoder"
+gem "ancestry"

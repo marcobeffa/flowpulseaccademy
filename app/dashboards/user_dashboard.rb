@@ -10,7 +10,6 @@ class UserDashboard < Administrate::BaseDashboard
   ATTRIBUTE_TYPES = {
     id: Field::Number,
     email_address: Field::String,
-    my_contact_id: Field::Number,
     password_digest: Field::String,
     sessions: Field::HasMany,
     superadmin: Field::Boolean,
@@ -26,7 +25,6 @@ class UserDashboard < Administrate::BaseDashboard
   COLLECTION_ATTRIBUTES = %i[
     id
     email_address
-    my_contact_id
     password_digest
   ].freeze
 
@@ -35,7 +33,6 @@ class UserDashboard < Administrate::BaseDashboard
   SHOW_PAGE_ATTRIBUTES = %i[
     id
     email_address
-    my_contact_id
     password_digest
     sessions
     superadmin
@@ -48,7 +45,6 @@ class UserDashboard < Administrate::BaseDashboard
   # on the model's form (`new` and `edit`) pages.
   FORM_ATTRIBUTES = %i[
     email_address
-    my_contact_id
     password_digest
     sessions
     superadmin

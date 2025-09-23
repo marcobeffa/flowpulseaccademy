@@ -1,0 +1,197 @@
+---
+spec_version: "1.0"
+
+course:
+  titolo: "Igiene Posturale"
+  description: "Corso per riattivare le articolazioni e togliere le tensioni da collo e spalle"
+  url_copertina: "https://ik.imagekit.io/posturacorretta/corsi/igiene_posturale/copertina_igiene_posturale.png?updatedAt=1714122305648"
+  # Tassonomia "brand/prodotto/percorso" (evita i domini qui)
+  content_slug: "corso-igiene-posturale"
+  online:
+    preparatory_courses:
+    # - slug: iscrizione_profilazione # da cercare in config/courses/iscrizione_profilazione_dd_mm_yyyy
+    #  title: "Iscrizione e Profilazione"
+    #  shared: true
+    # - slug: igiene_posturale_introduzione
+    #  title: "Introduzione"
+    #  shared: true
+  academy:
+    professional_roles:
+      - utente
+      - insegnante
+      - tutor
+      - tirocinante
+      - segnalatore
+      - responsabile_sala
+      - admin_posturacorretta
+
+    plans:
+      - slug: autonomo_online
+        canale: online
+        modalita: autonomia
+        prezzo_eur: 80
+        attivo: true
+        revenue_shares:
+          insegnante: 60
+          admin_posturacorretta: 40
+
+      - slug: pro_online_singolo
+        canale: online
+        modalita: professionista_singolo
+        prezzo_eur: 150
+        attivo: true
+        revenue_shares:
+          insegnante: 50
+          tutor: 20
+          admin_posturacorretta: 20
+          segnalatore: 10
+
+      - slug: pro_online_gruppo
+        canale: online
+        modalita: professionista_gruppo
+        prezzo_eur: 100
+        attivo: true
+        revenue_shares:
+          insegnante: 40
+          tutor: 30
+          admin_posturacorretta: 20
+          segnalatore: 10
+
+      - slug: pro_presenza_singolo
+        canale: presenza
+        modalita: professionista_singolo
+        prezzo_eur: 150
+        attivo: true
+        revenue_shares:
+          insegnante: 50
+          responsabile_sala: 20
+          admin_posturacorretta: 20
+          segnalatore: 10
+
+      - slug: pro_presenza_gruppo
+        canale: presenza
+        modalita: professionista_gruppo
+        prezzo_eur: 120
+        attivo: true
+        revenue_shares:
+          insegnante: 35
+          tutor: 30
+          responsabile_sala: 15
+          admin_posturacorretta: 10
+          segnalatore: 10
+        steps_operativi:
+          - trovare_il_tutor
+          - trovare_responsabile_sala_o_centro
+          - trovare_l_insegnante
+          - stabilire_date_corso
+          - outreach_medici_farmacie_pr
+          - referente_accesso_centro
+          - fornire_materiale_segnalatore_qr
+          - fornire_link_iscrizione
+          - preparare_materiale_clienti_pdf_palline_bastone_libretto_facoltativo
+          - profilazione_clienti_per_idoneita_intro
+          - contattare_clienti_per_conferma
+          - lezione_introduzione_e_scrematura
+          - regola_avvio_corso_min_8_iscrizioni_pagamento_entra_3_giorni_iscrizione_chiusura_iscrizioni_7_giorni_prima
+          - raccogliere_pagamenti_online_offline_sumup
+          - automatizzare_fatture
+          - pagare_professionisti
+          - garantire_presenza_partecipanti
+          - raccogliere_feedback_e_issue
+          - chiudere_gruppo_e_correzioni
+          - referral_rule_segnalatore_20_se_porta_un_amico
+
+  # URL di riferimento del corso
+  
+  
+
+  lessons:
+    - slug: igiene_posturale_l1
+      title: "Lezione 1"
+      description: "Mobilizzazione articolare"
+      order: 1
+      url_copertina: ""
+      content_slug: "igiene_posturale_l1"
+    
+      # url_pdf: "https://ik.imagekit.io/posturacorretta/corsi/igiene_posturale/materiale_utenti/libretto_SERIE1_%20igiene_posturale_articolazioni.pdf?updatedAt=1758206899558"
+      # url_video: "https://youtu.be/nMFk2TViWtw"
+    
+
+    - slug: rigidità
+      type: teoria_perché
+      title:
+      description: "Evitare rigidità: capsula ricca di recettori → riequilibrio schema motorio."
+      url_pdf: ""
+      url_video: ""
+    - slug: cartilagine_1
+      type: teoria_perché
+      title:
+      description: "Cartilagine come spugna: sinoviale nutre con compressione/decompressione."
+      url_pdf: ""
+      url_video: ""
+    - slug: cartilagine_2
+      type: teoria_perché
+      title:
+      description: "Concetto palude: pressione negativa attira tossine se non muoviamo."
+      url_pdf: ""
+      url_video: ""
+    - slug: cartilagine_3
+      type: teoria_perché
+      title:
+      description: "Sistema linfatico: continuità dei liquidi supportata dalla mobilità."
+      url_pdf: ""
+      url_video: ""
+    - slug: cartilagine_4
+      type: teoria_perché
+      title:
+      description: "Rigido/Lasso: percepire stato e adattare il lavoro."
+      url_pdf: ""
+      url_video: ""
+    - slug: pratica_mobilizzazioni
+      type: pratica_cosa
+      title:
+      description: ["Mobilizzazione delle principali articolazioni."]
+      url_pdf: ""
+      url_video: ""
+    - slug: pratica_routine
+      type: pratica_come
+      title:
+      description: "Routine semplice e memorizzabile, al ritmo del respiro (parasimpatico), per 4 settimane."
+      url_pdf: ""
+      url_video: ""
+
+    - slug: igiene_posturale_l2
+      title: "Lezione 2"
+      order: 2
+      description: "Togliere tensioni da cingoli ed estremità"
+      url_pdf: "https://ik.imagekit.io/posturacorretta/corsi/igiene_posturale/materiale_utenti/libretto_SERIE2_DEF.pdf?updatedAt=1758206899343"
+      url_video: "https://youtu.be/aYpc4aIvWMQ"
+      url_copertina: ""
+      url_content: ""
+
+    - slug: igiene_posturale_l3
+      title: "Lezione 3"
+      order: 3
+      description: "Scaricare il sistema nervoso"
+      url_pdf: "https://ik.imagekit.io/posturacorretta/corsi/igiene_posturale/materiale_utenti/libretto_SERIE3.pdf?updatedAt=1758206899471"
+      url_video: "https://youtu.be/ELY7OudWzCs"
+      url_copertina: ""
+      url_content: ""
+
+    - slug: igiene_posturale_l4
+      title: "Lezione 4"
+      order: 4
+      description: "Ricarica energetica: riattiva i recettori cutanei"
+      url_pdf: "https://ik.imagekit.io/posturacorretta/corsi/igiene_posturale/materiale_utenti/libretto_SERIE4.pdf?updatedAt=1758206899404"
+      url_video: "https://youtu.be/vFOwazQlVdc"
+      url_copertina: ""
+      url_content: ""
+
+    - slug: igiene_posturale_chiusura
+      title: "Chiusura"
+      order: 5
+      description: "Feedback e prosecuzione del programma"
+      url_pdf: ""
+      url_video: ""
+      url_copertina: ""
+      url_content: ""

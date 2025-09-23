@@ -1,0 +1,110 @@
+<div class="max-w-5xl mx-auto py-10 px-4">
+  <div class="flex flex-wrap items-center justify-between gap-3 mb-6 w-xl">
+    <div class="flex flex-wrap gap-2">
+      <%= link_to "🔙", generaimpresa_lists_path,
+          class: "px-3 py-2 border border-gray-300 rounded-lg text-sm hover:border-gray-400" %>
+      <h1 class="text-2xl font-bold break-words">ID: <%= @list.id %> - <%= @list.name.presence || "Lista ##{@list.id}" %></h1>
+      <%= link_to "Ordina", order_generaimpresa_list_path(@list),
+          class: "px-3 py-2 bg-blue-600 text-white rounded-lg text-sm hover:bg-blue-700" %>
+      <%= link_to "✍🏻", edit_generaimpresa_list_path(@list),
+          class: "px-3 py-2 bg-blue-600 text-white rounded-lg text-sm hover:bg-blue-700" %>
+      <%= link_to "JSON", order_generaimpresa_list_path(@list, format: :json),
+          class: "px-3 py-2 border border-gray-300 rounded-lg text-sm hover:border-gray-400" %>
+      <%= button_to "🗑️ Elimina",
+      generaimpresa_list_path(@list),
+      method: :delete,
+      data: { turbo_confirm: "Eliminare la lista “#{@list.name.presence || @list.id}” e tutte le sue voci?" },
+      form: { class: "inline" },
+      class: "px-3 py-2 bg-red-600 text-white rounded-lg text-sm hover:bg-red-700" %>
+    </div>
+  </div>
+  <div class="mb-4 flex">
+    <button id="expand-all"   class="flex px-3 py-2 border border-gray-300 rounded-lg text-sm hover:border-gray-400">↕️</button>
+    <button id="collapse-all" class="flex px-3 py-2 border border-gray-300 rounded-lg text-sm hover:border-blue-400">⏏️</button>
+    <input id="filter-input" type="search" placeholder="Filtra per titolo…"
+           class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm">
+  </div>
+  <% if @nodes.present? %>
+    <div class="bg-white border border-gray-200 rounded-xl p-4">
+      <ul id="tree-show" class="tree list-none m-0 p-0">
+        <% @nodes.each do |node| %>
+          <%= render partial: "node", locals: { node: node } %>
+        <% end %>
+      </ul>
+    </div>
+  <% else %>
+    <div class="p-6 border border-dashed border-gray-300 rounded-xl text-center text-gray-600">
+      La lista è vuota.
+      <%= link_to "Aggiungi voci", order_generaimpresa_list_path(@list),
+          class: "inline-block ml-2 px-3 py-2 bg-green-600 text-white rounded-lg text-sm hover:bg-green-700" %>
+    </div>
+  <% end %>
+</div>
+<style>
+  .tree > li { margin: .25rem 0; }
+  .tree ul { border-left: 1px dashed #d1d5db; margin-left: 1.25rem; padding-left: 1rem; }
+  .tree .node-row { display:flex; align-items:flex-start; gap:.5rem; padding:.25rem .5rem; border-radius:.5rem; }
+  .tree .toggle-btn { width:1.75rem; height:1.75rem; display:flex; align-items:center; justify-content:center;
+                      border:1px solid #e5e7eb; border-radius:.5rem; background:#fff; font-size:.75rem; }
+  .tree li.collapsed > ul { display:none; }
+  /* numerazione */
+  .tree .node-num { min-width: 3ch; padding: 0 .375rem; border:1px solid #e5e7eb; border-radius:.5rem;
+                    font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size:.75rem; line-height:1.5rem;
+                    color:#374151; background:#f9fafb; text-align:center; }
+  .tree .node-title { font-weight:600; word-break: break-word; color:#111827; }
+</style>
+<script>
+  // filtro
+  const filterInput = document.getElementById('filter-input');
+  const treeRoot = document.getElementById('tree-show');
+  filterInput?.addEventListener('input', () => {
+    const q = filterInput.value.trim().toLowerCase();
+    const matchNode = (li) => {
+      const title = li.dataset.title || '';
+      const children = Array.from(li.querySelector(':scope > ul')?.children || []);
+      const childMatches = children.map(matchNode).some(Boolean);
+      const selfMatch = q === '' || title.includes(q);
+      li.style.display = (selfMatch || childMatches) ? '' : 'none';
+      return selfMatch || childMatches;
+    };
+    Array.from(treeRoot?.children || []).forEach(matchNode);
+    // di default NON rinumeriamo sui visibili per mantenere coerenza con l'ordine reale
+  });
+
+  // toggle singolo nodo
+  document.addEventListener('click', (e) => {
+    const btn = e.target.closest('[data-toggle]');
+    if (!btn) return;
+    const li = btn.closest('li');
+    li.classList.toggle('collapsed');
+    btn.textContent = li.classList.contains('collapsed') ? '▶' : '▼';
+  });
+
+  // espandi/comprimi tutto
+  document.getElementById('expand-all')?.addEventListener('click', () => {
+    document.querySelectorAll('#tree-show li.collapsed').forEach(li => li.classList.remove('collapsed'));
+    document.querySelectorAll('#tree-show [data-toggle]').forEach(b => b.textContent = '▼');
+  });
+  document.getElementById('collapse-all')?.addEventListener('click', () => {
+    document.querySelectorAll('#tree-show li').forEach(li => {
+      if (li.querySelector(':scope > ul')) li.classList.add('collapsed');
+    });
+    document.querySelectorAll('#tree-show [data-toggle]').forEach(b => b.textContent = '▶');
+  });
+
+  // numerazione gerarchica (basata sulla posizione DOM)
+  function renumber() {
+    const root = document.getElementById('tree-show');
+    const walk = (ul, prefix=[]) => {
+      Array.from(ul.children).forEach((li, idx) => {
+        const num = [...prefix, idx + 1].join('.');
+        const slot = li.querySelector(':scope > .node-row .node-num');
+        if (slot) slot.textContent = num;
+        const child = li.querySelector(':scope > ul');
+        if (child) walk(child, [...prefix, idx + 1]);
+      });
+    };
+    if (root) walk(root);
+  }
+  document.addEventListener('DOMContentLoaded', renumber);
+</script>

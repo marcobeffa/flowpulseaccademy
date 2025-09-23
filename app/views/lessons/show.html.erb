@@ -1,5 +1,5 @@
 <div class="mx-auto max-w-4xl px-6 py-10">
-  <%= link_to "← Indice corso", course_path(@course["slug"]), class: "text-sm text-blue-600 hover:underline" %>
+  <%= link_to "← Indice corso", academy_course_path(@course["slug"]), class: "text-sm text-blue-600 hover:underline" %>
   <h1 class="mt-4 text-3xl font-bold"><%= @lesson["title"] %></h1>
   <% if @lesson["description"].present? %>
     <p class="mt-2 text-gray-600"><%= Array(@lesson["description"]).join(" ") %></p>

@@ -10,12 +10,14 @@ class ContactDashboard < Administrate::BaseDashboard
   ATTRIBUTE_TYPES = {
     id: Field::Number,
     user: Field::BelongsTo,
+
     cognome: Field::String,
+    nome: Field::String,
     diventa_insegnante: Field::Boolean,
     email: Field::String,
     lat: Field::String.with_options(searchable: false),
     lng: Field::String.with_options(searchable: false),
-    nome: Field::String,
+
     telefono_facoltativo: Field::String,
     tipo_utente: Field::Select.with_options(searchable: false, collection: ->(field) { field.resource.class.send(field.attribute.to_s.pluralize).keys }),
     created_at: Field::DateTime,
@@ -31,6 +33,7 @@ class ContactDashboard < Administrate::BaseDashboard
     id
     user
     cognome
+    nome
     diventa_insegnante
     email
   ].freeze
@@ -41,11 +44,12 @@ class ContactDashboard < Administrate::BaseDashboard
     id
     user
     cognome
+    nome
     diventa_insegnante
     email
     lat
     lng
-    nome
+
     telefono_facoltativo
     tipo_utente
     created_at
@@ -58,11 +62,12 @@ class ContactDashboard < Administrate::BaseDashboard
   FORM_ATTRIBUTES = %i[
     user
     cognome
+    nome
     diventa_insegnante
     email
     lat
     lng
-    nome
+
     telefono_facoltativo
     tipo_utente
   ].freeze

@@ -52,7 +52,7 @@ class ScheduledEventsController < ApplicationController
     @scheduled_event.destroy!
 
     respond_to do |format|
-      format.html { redirect_to scheduled_events_path, notice: "Scheduled event was successfully destroyed.", status: :see_other }
+      format.html { redirect_to teaching_training_courses_path, notice: "Scheduled event was successfully destroyed.", status: :see_other }
       format.json { head :no_content }
     end
   end

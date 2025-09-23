@@ -1,14 +1,14 @@
 <!-- app/views/lessons/show.html.erb -->
 <%= render "shared/breadcrumb", crumbs: {
-  "Corsi" => courses_path,
-  @course.titolo => course_path(@course.slug),
+  "Corsi" => onlinecourses_courses_path,
+  @course.titolo => academy_course_path(@course.slug),
   @lesson.title => nil
 } %>
 <div class="space-y-6">
   <%= render "shared/card", title: @lesson.title, subtitle: @lesson.description do %>
     <div class="flex items-center justify-between">
       <div class="text-sm"><%= resource_links(url_content: @lesson.url_content, url_video: @lesson.url_video, url_pdf: @lesson.url_pdf) %></div>
-      <%= link_to "← Torna al corso", course_path(@course.slug), class: "text-sm text-slate-600 hover:text-slate-900" %>
+      <%= link_to "← Torna al corso", academy_course_pathrse_path(@course.slug), class: "text-sm text-slate-600 hover:text-slate-900" %>
     </div>
   <% end %>
   <%= render "shared/card", title: "Schede", subtitle: "Indice della lezione" do %>

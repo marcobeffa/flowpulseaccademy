@@ -1,0 +1,104 @@
+---
+spec_version: "1.0"
+
+course:
+  titolo: "Igiene Posturale"
+  description: "Corso per riattivare le articolazioni e togliere le tensioni da collo e spalle"
+  url_copertina: "https://ik.imagekit.io/posturacorretta/corsi/igiene_posturale/copertina_igiene_posturale.png?updatedAt=1714122305648"
+  # Tassonomia "brand/prodotto/percorso" (evita i domini qui)
+  content_slug: "corso-igiene-posturale"
+  online:
+    preparatory_courses:
+      - slug: "courses/flowpulse/salute/posturacorretta/01-iscrizione-profilazione/iscrizione-profilazione-24-09-2025.yml" # da cercare in iscrizione_profilazione_dd_mm_yyyy
+        title: "Iscrizione e Profilazione"
+        description: "Prima di iniziare"
+        shared: true
+    lessons:
+      - slug: igiene_posturale_l1
+        title: "Lezione 1"
+        description: "Mobilizzazione articolare"
+        chapter: false
+        url_copertina: ""
+        content_slug: ""
+
+      - slug: rigidità
+        title: ""
+        description: "Evitare rigidità: capsula ricca di recettori → riequilibrio schema motorio."
+        chapter: false
+        url_copertina: ""
+        content_slug: ""
+
+      - slug: cartilagine_1
+        title: ""
+        description: "Cartilagine come spugna: sinoviale nutre con compressione/decompressione."
+        chapter: false
+        url_copertina: ""
+        content_slug: ""
+        
+      - slug: cartilagine_2
+        title: ""
+        description: "Concetto palude: pressione negativa attira tossine se non muoviamo."
+        chapter: false
+        url_copertina: ""
+        content_slug: ""
+
+      - slug: cartilagine_3
+        title: ""
+        description: "Sistema linfatico: continuità dei liquidi supportata dalla mobilità."
+        chapter: false
+        url_copertina: ""
+        content_slug: ""
+        
+      - slug: cartilagine_4
+        title: ""
+        description: "Rigido/Lasso: percepire stato e adattare il lavoro."
+        chapter: false
+        url_copertina: ""
+        content_slug: ""
+        
+      - slug: pratica_mobilizzazioni
+        type: pratica_cosa
+        title: ""
+        description: ["Mobilizzazione delle principali articolazioni."]
+        chapter: false
+        url_copertina: ""
+        content_slug: ""
+        url_pdf: ""
+        url_video: ""
+
+      - slug: pratica_routine
+        title: ""
+        description: "Routine semplice e memorizzabile, al ritmo del respiro (parasimpatico), per 4 settimane."
+        chapter: false
+        url_copertina: ""
+        content_slug: ""
+        url_pdf: ""
+        url_video: ""
+
+      - slug: igiene_posturale_l2
+        title: ""
+        description: "Togliere tensioni da cingoli ed estremità"
+        chapter: false
+        url_copertina: ""
+        content_slug: ""
+
+      - slug: igiene_posturale_l3
+        title: "Lezione 3"
+        description: "Scaricare il sistema nervoso"
+        chapter: false
+        url_copertina: ""
+        content_slug: ""
+
+      - slug: igiene_posturale_l4
+        title: "Lezione 4"
+        description: "Ricarica energetica: riattiva i recettori cutanei"
+        chapter: false
+        url_copertina: ""
+        content_slug: ""
+
+      - slug: igiene_posturale_chiusura
+        title: "Chiusura"
+        description: "Feedback e prosecuzione del programma"
+        chapter: false
+        url_copertina: ""
+        content_slug: ""

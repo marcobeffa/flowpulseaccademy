@@ -41,3 +41,4 @@ get "/courses/igieneposturale", to: redirect("/courses/igiene_posturale")
 resources :courses, only: [:show], param: :slug do
   resources :lessons, only: [:show], param: :slug
 end
+

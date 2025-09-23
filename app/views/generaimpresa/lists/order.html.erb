@@ -1,0 +1,351 @@
+<div class="max-w-5xl mx-auto py-10 px-4">
+  <div class="bg-white border border-gray-300 rounded-2xl shadow-xl p-6">
+    <h1 class="text-2xl font-bold mb-3 text-gray-900"> <%= link_to "🔙 #{@list.name}", generaimpresa_list_path(@list) %></h1>
+    <p class="text-sm text-gray-600 mb-4">
+      <kbd class="px-2 py-1 bg-gray-100 border border-gray-300 rounded text-xs">Tab</kbd> = rientra,
+      <kbd class="px-2 py-1 bg-gray-100 border border-gray-300 rounded text-xs">Shift+Tab</kbd> = esci,
+      <kbd class="px-2 py-1 bg-gray-100 border border-gray-300 rounded text-xs">Alt+↑</kbd>/<kbd class="px-2 py-1 bg-gray-100 border border-gray-300 rounded text-xs">Alt+↓</kbd> = su/giù,
+      <kbd class="px-2 py-1 bg-gray-100 border border-gray-300 rounded text-xs">Enter</kbd> = nuovo a fianco,
+      <kbd class="px-2 py-1 bg-gray-100 border border-gray-300 rounded text-xs">Backspace</kbd> su titolo vuoto = elimina.
+    </p>
+    <div class="flex flex-wrap gap-2 mb-4">
+      <button class="px-3 py-2 bg-white border border-gray-300 rounded-lg text-sm hover:border-blue-400 hover:shadow-md transition-all" id="toggle-mode">Modalità: ✍🏻</button>
+      <button class="px-3 py-2 bg-white border border-gray-300 rounded-lg text-sm hover:border-blue-400 hover:shadow-md transition-all edit-only" id="add-root">+ 🌳</button>
+      <button class="px-3 py-2 bg-white border border-gray-300 rounded-lg text-sm hover:border-blue-400 hover:shadow-md transition-all" id="expand-all">🔽</button>
+      <button class="px-3 py-2 bg-white border border-gray-300 rounded-lg text-sm hover:border-blue-400 hover:shadow-md transition-all" id="collapse-all">⏏️</button>
+      <button class="px-3 py-2 bg-white border border-gray-300 rounded-lg text-sm hover:border-blue-400 hover:shadow-md transition-all" id="export-json">💾 json</button>
+      <button class="px-3 py-2 bg-white border border-gray-300 rounded-lg text-sm hover:border-blue-400 hover:shadow-md transition-all" id="copy-json">📝 json</button>
+      <button class="px-3 py-2 bg-white border border-gray-300 rounded-lg text-sm hover:border-blue-400 hover:shadow-md transition-all" id="export-yaml">💾 yaml</button>
+      <button class="px-3 py-2 bg-white border border-gray-300 rounded-lg text-sm hover:border-blue-400 hover:shadow-md transition-all edit-only" id="import-json">📥 json</button>
+      <button class="px-3 py-2 bg-white border border-red-300 rounded-lg text-sm hover:border-red-400 hover:shadow-md transition-all edit-only" id="clear-all">Pulisci</button>
+      <button class="px-3 py-2 bg-green-600 text-white border border-green-600 rounded-lg text-sm hover:bg-green-700 transition-all edit-only" id="save-to-rails">Salva su Rails</button>
+      <span class="text-xs text-gray-500">Autosave: <code class="px-2 py-1 bg-gray-100 border border-gray-300 rounded" id="autosave-status">idle</code></span>
+    </div>
+    <ul class="tree list-none p-0 m-0" id="tree"></ul>
+    <div class="mt-6 flex flex-wrap gap-2 text-xs text-gray-500">
+      <span class="px-3 py-2 border border-gray-300 rounded-full">Senza librerie JS</span>
+      <span class="px-3 py-2 border border-gray-300 rounded-full">Annidamento infinito</span>
+      <span class="px-3 py-2 border border-gray-300 rounded-full">Scorciatoie da tastiera</span>
+      <span class="px-3 py-2 border border-gray-300 rounded-full">Autosave localStorage</span>
+      <span class="px-3 py-2 border border-gray-300 rounded-full">Export JSON & YAML</span>
+      <span class="px-3 py-2 border border-gray-300 rounded-full">PATCH verso Rails</span>
+    </div>
+  </div>
+</div>
+<style>
+  .title[contenteditable="true"]:focus { outline: 2px solid #10b981; outline-offset: 2px; border-radius: 0.5rem; }
+  .tree ul { border-left: 1px dashed #6b7280; }
+  .collapsed > ul { display: none; }
+  .ghost { opacity: 0.6; }
+</style>
+<script>
+  // === ERB helpers (Opzione A) ===
+  const ORDER_URL      = "<%= order_generaimpresa_list_path(@list) %>";
+  const ORDER_URL_JSON = "<%= order_generaimpresa_list_path(@list, format: :json) %>";
+  const CSRF_TOKEN     = document.querySelector('meta[name="csrf-token"]')?.content;
+
+  // === helpers ===
+  const $  = (sel, root = document) => root.querySelector(sel);
+  const $$ = (sel, root = document) => Array.from(root.querySelectorAll(sel));
+  const tree = $('#tree');
+  const autosaveStatus = $('#autosave-status');
+
+  function liOf(el){ return el.closest('li.node'); }
+  function ensureChildList(li){
+    let ul = li.querySelector(':scope > ul');
+    if (!ul){
+      ul = document.createElement('ul');
+      ul.className = 'list-none my-2 ml-6 pl-4 relative';
+      li.appendChild(ul);
+    }
+    return ul;
+  }
+
+  function createNode(title='Nuova voce'){
+    const li = document.createElement('li');
+    li.className = 'node my-2';
+    li.innerHTML = `
+      <div class="grid grid-cols-[1fr_auto] items-center gap-2 bg-white border border-gray-300 rounded-lg p-2">
+        <div class="title px-2 py-1 rounded outline-none" contenteditable="true"></div>
+        <div class="actions flex gap-1">
+          <button class="w-7 h-7 flex items-center justify-center border border-gray-300 bg-white rounded hover:border-blue-400 text-sm" data-action="up" title="Su">▲</button>
+          <button class="w-7 h-7 flex items-center justify-center border border-gray-300 bg-white rounded hover:border-blue-400 text-sm" data-action="down" title="Giù">▼</button>
+          <button class="w-7 h-7 flex items-center justify-center border border-gray-300 bg-white rounded hover:border-blue-400 text-sm" data-action="indent" title="Rientra (→)">→</button>
+          <button class="w-7 h-7 flex items-center justify-center border border-gray-300 bg-white rounded hover:border-blue-400 text-sm" data-action="outdent" title="Esci (←)">←</button>
+          <button class="w-7 h-7 flex items-center justify-center border border-gray-300 bg-white rounded hover:border-blue-400 text-sm" data-action="add-child" title="Aggiungi figlio">＋</button>
+          <button class="w-7 h-7 flex items-center justify-center border border-gray-300 bg-white rounded hover:border-blue-400 text-sm" data-action="add-sibling" title="Nuovo a fianco">✚</button>
+          <button class="w-7 h-7 flex items-center justify-center border border-gray-300 bg-white rounded hover:border-red-400 text-sm" data-action="remove" title="Elimina">✕</button>
+          <button class="w-7 h-7 flex items-center justify-center border border-gray-300 bg-white rounded hover:border-blue-400 text-sm" data-action="toggle" title="Espandi/Comprimi">▼</button>
+        </div>
+      </div>`;
+    li.querySelector('.title').textContent = title;
+    return li;
+  }
+
+  function focusTitle(li){
+    const t = li.querySelector('.title');
+    if (!t) return;
+    t.focus();
+    const r = document.createRange();
+    r.selectNodeContents(t); r.collapse(false);
+    const sel = getSelection(); sel.removeAllRanges(); sel.addRange(r);
+  }
+
+  function moveUp(li){ const prev = li.previousElementSibling; if (prev) prev.before(li); scheduleAutosave(); }
+  function moveDown(li){ const next = li.nextElementSibling; if (next) next.after(li); scheduleAutosave(); }
+  function indent(li){
+    const prev = li.previousElementSibling;
+    if (!prev) return;
+    ensureChildList(prev).appendChild(li);
+    scheduleAutosave();
+  }
+  function outdent(li){
+    const ul = li.parentElement;
+    const parentLi = ul.closest('li.node');
+    if (!parentLi) return;
+    parentLi.after(li);
+    if (!ul.children.length) ul.remove();
+    scheduleAutosave();
+  }
+  function addSibling(li){ const n = createNode(); li.after(n); focusTitle(n); scheduleAutosave(); }
+  function addChild(li){ const n = createNode(); ensureChildList(li).appendChild(n); focusTitle(n); scheduleAutosave(); }
+  // Aggiungi: conferma eliminazione
+    function confirmDeleteNode(li){
+      const title = li.querySelector(':scope .title')?.textContent.trim() || 'voce';
+      const hasChildren = !!li.querySelector(':scope > ul > li');
+      const msg = hasChildren
+        ? `Eliminare l'item "${title}" e TUTTI i suoi figli?`
+        : `Eliminare l'item "${title}"?`;
+      return confirm(msg);
+    }
+
+    // Sostituisci la removeNode esistente con questa
+    function removeNode(li){
+        if (!confirmDeleteNode(li)) return;
+        const ul = li.parentElement;
+        li.remove();
+        if (ul && ul !== tree && !ul.children.length) ul.remove();
+        scheduleAutosave();
+    }
+  function toggleCollapse(li){
+    li.classList.toggle('collapsed');
+    const btn = li.querySelector(':scope > div [data-action="toggle"], :scope > .row [data-action="toggle"]');
+    if (btn) btn.textContent = li.classList.contains('collapsed') ? '▶' : '▼';
+  }
+
+  // Delegazione click
+  tree.addEventListener('click', (e)=>{
+    const btn = e.target.closest('button'); if (!btn) return;
+    const li = liOf(btn); if (!li) return;
+    const act = btn.dataset.action;
+    const mode = document.documentElement.getAttribute('data-mode');
+    if (mode === 'show' && act !== 'toggle') return;
+
+    if (act==='up') return moveUp(li);
+    if (act==='down') return moveDown(li);
+    if (act==='indent') return indent(li);
+    if (act==='outdent') return outdent(li);
+    if (act==='add-sibling') return addSibling(li);
+    if (act==='add-child') return addChild(li);
+    if (act==='remove') return removeNode(li);
+    if (act==='toggle') return toggleCollapse(li);
+  });
+
+  // Input & tastiera
+  tree.addEventListener('input', (e)=>{
+    if (!e.target.closest('.title')) return;
+    scheduleAutosave();
+  });
+
+  tree.addEventListener('keydown', (e)=>{
+    if (document.documentElement.getAttribute('data-mode') === 'show') return;
+    const t = e.target.closest('.title'); if (!t) return;
+    const li = liOf(t); if (!li) return;
+
+    if (e.key === 'Tab'){ e.preventDefault(); if (e.shiftKey) outdent(li); else indent(li); return; }
+    if (e.altKey && e.key === 'ArrowUp'){ e.preventDefault(); moveUp(li); return; }
+    if (e.altKey && e.key === 'ArrowDown'){ e.preventDefault(); moveDown(li); return; }
+    if (e.key === 'Enter'){ e.preventDefault(); addSibling(li); return; }
+    if (e.key === 'Backspace' && t.textContent.trim()===''){
+      e.preventDefault();
+      const target = li.previousElementSibling || li.nextElementSibling || li.parentElement.closest('li.node');
+      removeNode(li); if (target) focusTitle(target);
+    }
+  });
+
+  // Toolbar
+  $('#add-root').addEventListener('click', ()=>{ const n = createNode(); tree.appendChild(n); focusTitle(n); });
+  $('#expand-all').addEventListener('click', ()=>{ $$('.collapsed', tree).forEach(li=>li.classList.remove('collapsed')); $$('[data-action="toggle"]', tree).forEach(b=>b.textContent='▼'); });
+  $('#collapse-all').addEventListener('click', ()=>{ $$('#tree li.node').forEach(li=>{ if (li.querySelector(':scope > ul')) li.classList.add('collapsed'); }); $$('[data-action="toggle"]', tree).forEach(b=>b.textContent='▶'); });
+  $('#clear-all').addEventListener('click', ()=>{ if (confirm('Svuotare la lista?')){ tree.innerHTML=''; scheduleAutosave(true); } });
+
+  // Serializzazione (solo id esistente + title + children)
+  function serialize(li){
+    const title = li.querySelector(':scope > div > .title, :scope > .row > .title')?.textContent || '';
+    const id    = li.dataset.id ? Number(li.dataset.id) : null;
+    const kids  = li.querySelector(':scope > ul') ? Array.from(li.querySelector(':scope > ul').children).map(serialize) : [];
+    return { id, title, children: kids };
+  }
+  function exportData(){ return Array.from(tree.children).map(serialize); }
+
+  // Export JSON/YAML
+  function exportJSON(){
+    const payload = { version:'list-idea.v1', exported_at: new Date().toISOString(), nodes: exportData() };
+    const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = Object.assign(document.createElement('a'), { href: url, download: '<%= @list.name + DateTime.now.strftime("%d%m%Y%H%M")  %>.json' });
+    document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
+  }
+  function yamlString(v){
+    if (v == null) return '""';
+    const s = String(v);
+    if (/^[a-z0-9_-]+$/i.test(s)) return s;
+    return '"' + s.replace(/\\/g,'\\\\').replace(/\"/g,'\\"') + '"';
+  }
+  function nodeToYAML(n, indent=0){
+    const sp = '  '.repeat(indent);
+    let out = sp + '- title: ' + yamlString(n.title) + '\n';
+    if (n.id != null) out += sp + '  id: ' + n.id + '\n';
+    if (n.children && n.children.length){
+      out += sp + '  children:\n';
+      n.children.forEach(c => { out += nodeToYAML(c, indent+2); });
+    }
+    return out;
+  }
+  function exportYAML(){
+    const data = exportData();
+    let yaml = '# list-idea.v1\nversion: list-idea.v1\nexported_at: ' + new Date().toISOString() + '\n';
+    yaml += 'nodes:\n';
+    data.forEach(n => { yaml += nodeToYAML(n, 1); });
+    const blob = new Blob([yaml], { type: 'text/yaml' });
+    const url = URL.createObjectURL(blob);
+    const a = Object.assign(document.createElement('a'), { href: url, download: '<%= @list.name + DateTime.now.strftime("%d%m%Y%H%M") %>.yml' });
+    document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
+  }
+  $('#export-json').addEventListener('click', exportJSON);
+  $('#copy-json').addEventListener('click', async ()=>{
+    const payload = { version:'list-idea.v1', nodes: exportData() };
+    await navigator.clipboard.writeText(JSON.stringify(payload, null, 2));
+    alert('JSON copiato negli appunti');
+  });
+  $('#export-yaml').addEventListener('click', exportYAML);
+
+  // Import JSON (file locale)
+  $('#import-json').addEventListener('click', async ()=>{
+    const input = Object.assign(document.createElement('input'), { type: 'file', accept: 'application/json' });
+    input.addEventListener('change', async ()=>{
+      const file = input.files[0]; if (!file) return;
+      const text = await file.text();
+      try { const data = JSON.parse(text); buildFromJSONPayload(data); scheduleAutosave(true); }
+      catch(err){ alert('JSON non valido: ' + err.message); }
+    });
+    input.click();
+  });
+
+  // Autosave (localStorage)
+  const LS_KEY = 'list-idea.v1:list-<%= @list.id %>';
+  let autosaveTimer = null;
+
+  function scheduleAutosave(immediate=false){
+    autosaveStatus.textContent = 'pending';
+    autosaveStatus.className = 'px-2 py-1 bg-yellow-100 border border-yellow-300 rounded text-yellow-800';
+    if (autosaveTimer) clearTimeout(autosaveTimer);
+    autosaveTimer = setTimeout(()=>{ doAutosave(); }, immediate?0:600);
+  }
+  function doAutosave(){
+    const payload = { version:'list-idea.v1', saved_at: new Date().toISOString(), nodes: exportData() };
+    localStorage.setItem(LS_KEY, JSON.stringify(payload));
+    autosaveStatus.textContent = 'saved';
+    autosaveStatus.className = 'px-2 py-1 bg-green-100 border border-green-300 rounded text-green-800';
+    setTimeout(()=>{
+      autosaveStatus.textContent = 'idle';
+      autosaveStatus.className = 'px-2 py-1 bg-gray-100 border border-gray-300 rounded text-gray-600';
+    }, 1000);
+  }
+
+  // Costruzione da payload JSON del server/locale
+  function buildFromJSONPayload(payload){
+    if (!payload) return;
+    const arr = Array.isArray(payload.nodes) ? payload.nodes : (Array.isArray(payload) ? payload : []);
+    tree.innerHTML = '';
+    const build = (node) => {
+      const li = createNode(node.title || '');
+      if (node.id) li.dataset.id = node.id;
+      if (node.children?.length){
+        const ul = ensureChildList(li);
+        node.children.forEach(child => ul.appendChild(build(child)));
+      }
+      return li;
+    };
+    arr.forEach(n => tree.appendChild(build(n)));
+  }
+
+  // PATCH verso Rails (salva)
+  $('#save-to-rails').addEventListener('click', async ()=>{
+    const payload = { nodes: exportData(), delete_missing: true };
+    try{
+      const res = await fetch(ORDER_URL, {
+        method:'PATCH',
+        headers:{
+          'Content-Type':'application/json',
+          'Accept':'application/json',
+          ...(CSRF_TOKEN ? {'X-CSRF-Token': CSRF_TOKEN} : {})
+        },
+        body: JSON.stringify(payload)
+      });
+      if (!res.ok) throw new Error(await res.text());
+      alert('Salvato su Rails ✅');
+    } catch(err){
+      alert('Errore PATCH: ' + err.message);
+    }
+  });
+
+  // Modalità edit/show
+  (function(){
+    function setMode(next){
+      document.documentElement.setAttribute('data-mode', next);
+      $$('.title').forEach(t => t.setAttribute('contenteditable', next === 'edit' ? 'true' : 'false'));
+      const btn = document.getElementById('toggle-mode');
+      if (btn) btn.textContent = 'Modalità: ' + (next === 'edit' ? '✍🏻' : '👁️');
+
+      const editOnlyElements = $$('.edit-only');
+      const actionButtons = $$('.actions');
+
+      if (next === 'show') {
+        editOnlyElements.forEach(el => el.style.display = 'none');
+        actionButtons.forEach(el => el.style.display = 'none');
+      } else {
+        editOnlyElements.forEach(el => el.style.display = '');
+        actionButtons.forEach(el => el.style.display = 'flex');
+      }
+    }
+    const btn = document.getElementById('toggle-mode');
+    if (btn){
+      btn.addEventListener('click', ()=>{
+        const curr = document.documentElement.getAttribute('data-mode') || 'edit';
+        setMode(curr === 'edit' ? 'show' : 'edit');
+      });
+    }
+    setMode('edit');
+  })();
+
+  // Boot: prova server, poi fallback a localStorage, altrimenti lista vuota
+  (function boot(){
+    fetch(ORDER_URL_JSON)
+      .then(r => r.ok ? r.json() : {nodes: []})
+      .then(({nodes}) => {
+        if (nodes && nodes.length) {
+          buildFromJSONPayload({nodes});
+        } else {
+          const raw = localStorage.getItem(LS_KEY);
+          if (raw){
+            try { buildFromJSONPayload(JSON.parse(raw)); } catch(_){}
+          }
+        }
+      })
+      .catch(() => {
+        const raw = localStorage.getItem(LS_KEY);
+        if (raw){ try { buildFromJSONPayload(JSON.parse(raw)); } catch(_){ } }
+      });
+  })();
+</script>

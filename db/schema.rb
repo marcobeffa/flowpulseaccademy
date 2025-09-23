@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_09_17_141017) do
+ActiveRecord::Schema[8.0].define(version: 2025_09_20_170916) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -32,6 +32,24 @@ ActiveRecord::Schema[8.0].define(version: 2025_09_17_141017) do
     t.index ["responsable_contact_id"], name: "index_contacts_on_responsable_contact_id"
     t.index ["tipo_utente"], name: "index_contacts_on_tipo_utente"
     t.index ["user_id"], name: "index_contacts_on_user_id"
+  end
+
+  create_table "items", force: :cascade do |t|
+    t.bigint "list_id", null: false
+    t.string "title"
+    t.string "ancestry"
+    t.integer "position"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["list_id", "ancestry", "position"], name: "index_items_on_list_id_and_ancestry_and_position"
+    t.index ["list_id", "ancestry"], name: "index_items_on_list_id_and_ancestry"
+    t.index ["list_id"], name: "index_items_on_list_id"
+  end
+
+  create_table "lists", force: :cascade do |t|
+    t.string "name"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "scheduled_events", force: :cascade do |t|
@@ -94,6 +112,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_09_17_141017) do
 
   add_foreign_key "contacts", "contacts", column: "responsable_contact_id"
   add_foreign_key "contacts", "users"
+  add_foreign_key "items", "lists"
   add_foreign_key "scheduled_events", "contacts"
   add_foreign_key "scheduled_events", "training_courses"
   add_foreign_key "sessions", "users"
