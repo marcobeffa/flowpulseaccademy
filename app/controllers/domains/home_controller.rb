@@ -1,31 +1,21 @@
 # app/controllers/domains/home_controller.rb
-
-
 class Domains::HomeController < ApplicationController
-  # This action is mounted as the host-specific root.
-  # It interprets the domain’s url_landing and either
-  # - renders a template
-  # - dispatches to controller#action
-  # - redirects to an absolute URL
   def show
-    dom = DomainRegistry.find_domain_by_host(request.host)
-    head :not_found and return unless dom
+    slug = Current.domain&.slug.presence || "default" # o da DomainRegistry
+    tpl  = "domains/#{slug}"
 
-
-    landing = dom["url_landing"].to_s
-
-
-    if landing.start_with?("http://", "https://")
-     redirect_to landing, allow_other_host: true and return
-    end
-
-
-    if landing.include?("#")
-    controller, action = landing.split("#", 2)
-    render template: controller, action: action, layout: "application"
+    if lookup_context.exists?(tpl, [], true)
+      render tpl
     else
-    # Treat as a template path like "domains/flowpulse"
-    render template: landing, layout: "application"
+      # redirect a una pagina “home” *diversa* da questo stesso action
+      target = main_app.respond_to?(:pages_home_path) ? main_app.pages_home_path : main_app.root_path
+
+      # prevenzione loop
+      if request.fullpath == target || request.path == target
+        render "domains/default", status: :ok # crea una view di default, semplice
+      else
+        redirect_to target
+      end
     end
   end
 end
