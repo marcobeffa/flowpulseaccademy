@@ -93,4 +93,5 @@ Rails.application.routes.draw do
   # (opzionale) root di fallback per host NON gestiti da DomainRegistry:
   # root "pages#home"
   root "pages#home"
+  get "/home", to: "pages#home", as: :pages_home
 end
