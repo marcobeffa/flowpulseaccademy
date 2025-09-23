@@ -41,6 +41,7 @@
 <script>
   // === ERB helpers (Opzione A) ===
   const ORDER_URL      = "<%= order_generaimpresa_list_path(@list) %>";
+  const REORDER_URL     = "<%= reorder_generaimpresa_list_path(@list) %>"; // 👈 aggiungi questo
   const ORDER_URL_JSON = "<%= order_generaimpresa_list_path(@list, format: :json) %>";
   const CSRF_TOKEN     = document.querySelector('meta[name="csrf-token"]')?.content;
 
@@ -66,16 +67,24 @@
     li.className = 'node my-2';
     li.innerHTML = `
       <div class="grid grid-cols-[1fr_auto] items-center gap-2 bg-white border border-gray-300 rounded-lg p-2">
+        <div class="flex">
+         <button class="w-7 h-7 flex items-center justify-center border border-gray-300 bg-white rounded hover:border-blue-400 text-sm" data-action="toggle" title="Espandi/Comprimi">▼</button>
+
         <div class="title px-2 py-1 rounded outline-none" contenteditable="true"></div>
-        <div class="actions flex gap-1">
+
+          <div class="actions flex gap-1">
+        <button class="w-7 h-7 flex items-center justify-center border border-gray-300 bg-white rounded hover:border-blue-400 text-sm" data-action="add-sibling" title="Nuovo a fianco">✚</button>
+
+         <button class="w-7 h-7 flex items-center justify-center border border-gray-300 bg-white rounded hover:border-blue-400 text-sm" data-action="add-child" title="Aggiungi figlio">＋</button>
+
           <button class="w-7 h-7 flex items-center justify-center border border-gray-300 bg-white rounded hover:border-blue-400 text-sm" data-action="up" title="Su">▲</button>
           <button class="w-7 h-7 flex items-center justify-center border border-gray-300 bg-white rounded hover:border-blue-400 text-sm" data-action="down" title="Giù">▼</button>
           <button class="w-7 h-7 flex items-center justify-center border border-gray-300 bg-white rounded hover:border-blue-400 text-sm" data-action="indent" title="Rientra (→)">→</button>
           <button class="w-7 h-7 flex items-center justify-center border border-gray-300 bg-white rounded hover:border-blue-400 text-sm" data-action="outdent" title="Esci (←)">←</button>
-          <button class="w-7 h-7 flex items-center justify-center border border-gray-300 bg-white rounded hover:border-blue-400 text-sm" data-action="add-child" title="Aggiungi figlio">＋</button>
-          <button class="w-7 h-7 flex items-center justify-center border border-gray-300 bg-white rounded hover:border-blue-400 text-sm" data-action="add-sibling" title="Nuovo a fianco">✚</button>
+
           <button class="w-7 h-7 flex items-center justify-center border border-gray-300 bg-white rounded hover:border-red-400 text-sm" data-action="remove" title="Elimina">✕</button>
-          <button class="w-7 h-7 flex items-center justify-center border border-gray-300 bg-white rounded hover:border-blue-400 text-sm" data-action="toggle" title="Espandi/Comprimi">▼</button>
+
+        </div>
         </div>
       </div>`;
     li.querySelector('.title').textContent = title;
@@ -281,14 +290,15 @@
   }
 
   // PATCH verso Rails (salva)
+
   $('#save-to-rails').addEventListener('click', async ()=>{
     const payload = { nodes: exportData(), delete_missing: true };
     try{
-      const res = await fetch(ORDER_URL, {
-        method:'PATCH',
-        headers:{
-          'Content-Type':'application/json',
-          'Accept':'application/json',
+      const res = await fetch(REORDER_URL, {  // 👈 cambia qui
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
           ...(CSRF_TOKEN ? {'X-CSRF-Token': CSRF_TOKEN} : {})
         },
         body: JSON.stringify(payload)
@@ -299,6 +309,7 @@
       alert('Errore PATCH: ' + err.message);
     }
   });
+
 
   // Modalità edit/show
   (function(){

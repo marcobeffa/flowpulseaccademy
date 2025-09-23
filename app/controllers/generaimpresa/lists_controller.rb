@@ -24,20 +24,23 @@ module Generaimpresa
       end
     end
 
-    # GET/PATCH /generaimpresa/lists/:id/order
-    def order
-      if request.get?
-        respond_to do |format|
-          format.html
-          format.json { render json: { nodes: serialize_items(@list) } }
-        end
-      else
-        nodes = params.require(:nodes)
-        delete_missing = ActiveModel::Type::Boolean.new.cast(params[:delete_missing])
-        ReorderList.call(@list, nodes, delete_missing: delete_missing)
-        head :no_content
-      end
+  # GET/PATCH /generaimpresa/lists/:id/order
+  # app/controllers/generaimpresa/lists_controller.rb
+  def order
+    list = List.find(params[:id])
+    respond_to do |format|
+      format.html { render :order, locals: { list: list } }
+      format.json { render json: { nodes: serialize_items(list) } }
     end
+  end
+
+  def reorder
+    list = List.find(params[:id])
+    nodes = params.require(:nodes)
+    delete_missing = ActiveModel::Type::Boolean.new.cast(params[:delete_missing])
+    ReorderList.call(list, nodes, delete_missing: delete_missing)
+    head :no_content
+  end
     def show
       @nodes = serialize_items(@list)   # <-- array [{id:, title:, children:[...]}]
       respond_to do |format|

@@ -3,7 +3,7 @@ namespace :generaimpresa do
   resources :lists do
     member do
       get  :order
-      patch :order
+      patch :reorder
     end
   end
 end
