@@ -81,7 +81,7 @@ Rails.application.routes.draw do
   resources :passwords, param: :token                       # /passwords/:token
   resource  :session
 
-  get "pages/home"
+
   get "pages/index"
   get "pages/about"
   get "pages/contact"
