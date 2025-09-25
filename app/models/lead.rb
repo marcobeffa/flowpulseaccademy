@@ -2,8 +2,7 @@
 class Lead < ApplicationRecord
   # Enum UNICO (string/integer). Aggiungo _prefix per evitare collisioni: tipo_utente? ecc.
   enum :tipo_utente,
-       { utente: 0, professionista_salute: 1, professionista_benessere: 2 },
-       _prefix: :tipo
+       { utente: 0, professionista_salute: 1, professionista_benessere: 2 }
 
   belongs_to :user, optional: true
   has_many   :scheduled_events, dependent: :nullify
