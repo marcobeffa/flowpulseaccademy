@@ -3,7 +3,6 @@ class Lead < ApplicationRecord
 
 
   belongs_to :user, optional: true
-  belongs_to :user, optional: true
   has_many :scheduled_events
 
   # relazione self-referential: un lead può avere un "responsabile"
