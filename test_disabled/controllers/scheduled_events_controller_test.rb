@@ -17,7 +17,7 @@ class ScheduledEventsControllerTest < ActionDispatch::IntegrationTest
 
   test "should create scheduled_event" do
     assert_difference("ScheduledEvent.count") do
-      post scheduled_events_url, params: { scheduled_event: { contact_id: @scheduled_event.contact_id, end_at: @scheduled_event.end_at, lesson_slug: @scheduled_event.lesson_slug, note: @scheduled_event.note, start_at: @scheduled_event.start_at, training_course_id: @scheduled_event.training_course_id } }
+      post scheduled_events_url, params: { scheduled_event: { lead_id: @scheduled_event.lead_id, end_at: @scheduled_event.end_at, lesson_slug: @scheduled_event.lesson_slug, note: @scheduled_event.note, start_at: @scheduled_event.start_at, training_course_id: @scheduled_event.training_course_id } }
     end
 
     assert_redirected_to scheduled_event_url(ScheduledEvent.last)
@@ -34,7 +34,7 @@ class ScheduledEventsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should update scheduled_event" do
-    patch scheduled_event_url(@scheduled_event), params: { scheduled_event: { contact_id: @scheduled_event.contact_id, end_at: @scheduled_event.end_at, lesson_slug: @scheduled_event.lesson_slug, note: @scheduled_event.note, start_at: @scheduled_event.start_at, training_course_id: @scheduled_event.training_course_id } }
+    patch scheduled_event_url(@scheduled_event), params: { scheduled_event: { lead_id: @scheduled_event.lead_id, end_at: @scheduled_event.end_at, lesson_slug: @scheduled_event.lesson_slug, note: @scheduled_event.note, start_at: @scheduled_event.start_at, training_course_id: @scheduled_event.training_course_id } }
     assert_redirected_to scheduled_event_url(@scheduled_event)
   end
 

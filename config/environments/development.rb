@@ -71,9 +71,13 @@ Rails.application.configure do
   # config.generators.apply_rubocop_autocorrect_after_generate!
 
   # Autorizza host personalizzati per lo sviluppo
-  config.hosts << "flowpulse.posturacorretta.org"
-  config.hosts << "posturacorretta.org"
-  config.hosts << "www.posturacorretta.org"
+  # config/environments/development.rb
+  config.hosts += %w[
+    flowpulse.net www.flowpulse.net
+    posturacorretta.org www.posturacorretta.org
+    igieneposturale.it www.igieneposturale.it
+    flowpulse.posturacorretta.org
+  ]
 end
 
 

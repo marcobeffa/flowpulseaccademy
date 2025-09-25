@@ -9,7 +9,7 @@ class TrainingCourseDashboard < Administrate::BaseDashboard
   # on pages throughout the dashboard.
   ATTRIBUTE_TYPES = {
     id: Field::Number,
-    contact_id: Field::Number,
+    lead_id: Field::Number,
     course_slug: Field::String,
     lat: Field::String.with_options(searchable: false),
     lng: Field::String.with_options(searchable: false),
@@ -37,7 +37,7 @@ class TrainingCourseDashboard < Administrate::BaseDashboard
   # Feel free to add, remove, or rearrange items.
   COLLECTION_ATTRIBUTES = %i[
     id
-    contact_id
+    lead_id
     course_slug
     lat
   ].freeze
@@ -46,7 +46,7 @@ class TrainingCourseDashboard < Administrate::BaseDashboard
   # an array of attributes that will be displayed on the model's show page.
   SHOW_PAGE_ATTRIBUTES = %i[
     id
-    contact_id
+    lead_id
     course_slug
     lat
     lng
@@ -71,7 +71,7 @@ class TrainingCourseDashboard < Administrate::BaseDashboard
   # an array of attributes that will be displayed
   # on the model's form (`new` and `edit`) pages.
   FORM_ATTRIBUTES = %i[
-    contact_id
+    lead_id
     course_slug
     lat
     lng

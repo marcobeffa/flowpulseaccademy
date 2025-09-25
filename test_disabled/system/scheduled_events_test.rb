@@ -14,7 +14,7 @@ class ScheduledEventsTest < ApplicationSystemTestCase
     visit scheduled_events_url
     click_on "New scheduled event"
 
-    fill_in "Contact", with: @scheduled_event.contact_id
+    fill_in "Lead", with: @scheduled_event.lead_id
     fill_in "End at", with: @scheduled_event.end_at
     fill_in "Lesson slug", with: @scheduled_event.lesson_slug
     fill_in "Note", with: @scheduled_event.note
@@ -30,7 +30,7 @@ class ScheduledEventsTest < ApplicationSystemTestCase
     visit scheduled_event_url(@scheduled_event)
     click_on "Edit this scheduled event", match: :first
 
-    fill_in "Contact", with: @scheduled_event.contact_id
+    fill_in "Lead", with: @scheduled_event.lead_id
     fill_in "End at", with: @scheduled_event.end_at.to_s
     fill_in "Lesson slug", with: @scheduled_event.lesson_slug
     fill_in "Note", with: @scheduled_event.note

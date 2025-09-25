@@ -1,97 +1,107 @@
 # config/routes.rb
 Rails.application.routes.draw do
-  # Assicurati che il registry sia caricato quando si disegnano le rotte
-
   DomainRegistry.load!
 
-  # Helper per includere file di rotte spezzati
+  # helper per includere file di rotte spezzati
   def draw(name)
     path = Rails.root.join("config/routes/#{name}.rb")
     instance_eval(File.read(path), path.to_s, 1)
   end
 
-  # ROOT per ogni dominio (e alias) + redirect 301 dal dominio base ai sottodomini di servizio
-  DomainRegistry.each_domain do |dom|
-    subdomains = Array(dom["active_services"])
-                 .map { |k| DomainRegistry.service(k) }
-                 .compact
-                 .map { |svc| svc["subdomain"] }
-                 .uniq
-
-    subdomains.each do |sub|
-      host = "#{sub}.#{dom['host']}"
-      constraints host: /\A#{Regexp.escape(host)}\z/ do
-        # root del sottodominio → Services::HubController#show
-        root to: "services/hub#show", as: "service_hub_#{host.parameterize}"
-      end
+  # --- SERVIZI: montati solo sui subdomain abilitati ---
+  %i[onlinecourses teaching questionnaire blog].each do |svc_key|
+    constraints DomainRoutes.service_constraint(svc_key) do
+      draw svc_key  # es.: config/routes/onlinecourses.rb
     end
-    hosts = DomainRegistry.all_hosts_for_domain(dom) # => [host, alias1, alias2, ...]
-    constraints DomainRoutes.domain_constraint_for_hosts(hosts) do
-      # landing del dominio: sempre "/" su quel host
-      root to: "domains/home#show", as: "root_#{dom['host'].parameterize}"
+  end
 
-      # Redirect 301: /<service>(/*rest) -> https://<svc_sub>.<domain>/<service>(/*rest)
+  # --- BRAND ROOT + pagine brand + redirect /:key -> subdomain ---
+  DomainRegistry.each_domain do |dom|
+    # Root per ciascun subdomain attivo: https://<sub>.<domain>/
+    Array(dom["active_services"])
+      .map  { |k| DomainRegistry.service(k) }
+      .compact
+      .map  { |svc| svc["subdomain"] }
+      .uniq
+      .each do |sub|
+        host = "#{sub}.#{dom['host']}"
+        constraints host: /\A#{Regexp.escape(host)}\z/ do
+          root to: "services/hub#show", as: "root_#{host.parameterize}"
+        end
+      end
+
+    # Root per il BRAND (dominio nudo + alias)
+    hosts = DomainRegistry.all_hosts_for_domain(dom) # [host, alias1, ...]
+    constraints DomainRoutes.domain_constraint_for_hosts(hosts) do
+      # Landing brand
+      root to: DomainRoutes.brand_controller_for(dom, action: "home"),
+           as: "brand_root_#{dom['host'].tr('.', '_')}"
+      # Alias comodo
+      get "/home", to: DomainRoutes.brand_controller_for(dom, action: "home"),
+                   as: "brand_home_#{dom['host'].tr('.', '_')}"
+
+      # Pagine standard del brand
+      get "/about",   to: DomainRoutes.brand_controller_for(dom, action: "about")
+      get "/contact", to: DomainRoutes.brand_controller_for(dom, action: "contact")
+      get "/privacy", to: DomainRoutes.brand_controller_for(dom, action: "privacy")
+      get "/terms",   to: DomainRoutes.brand_controller_for(dom, action: "terms")
+
+      # Pagine EXTRA per-brand (se usi DomainRoutes.brand_pages)
+      if DomainRoutes.respond_to?(:brand_pages)
+        extra = (DomainRoutes.brand_pages(dom) - %w[home about contact privacy terms])
+        unless extra.empty?
+          get "/:page",
+              to: DomainRoutes.brand_controller_for(dom, action: "page"),
+              constraints: { page: /\A(?:#{extra.join("|")})\z/ }
+        end
+      end
+
+      # Redirect 301: dominio-nudo/:key → subdomain.dominio/:key
       Array(dom["active_services"]).each do |svc_key|
         svc = DomainRegistry.service(svc_key)
         next unless svc
 
-        get "/#{svc_key}/*rest", to: redirect(status: 301) { |params, _req|
-          "https://#{svc['subdomain']}.#{dom['host']}/#{svc_key}/#{params[:rest]}"
+        get "/#{svc_key}/*rest", to: redirect(status: 301) { |p, req|
+          "#{req.protocol}#{svc['subdomain']}.#{dom['host']}/#{svc_key}/#{p[:rest]}"
         }
-        get "/#{svc_key}", to: redirect(status: 301) { |_params, _req|
-          "https://#{svc['subdomain']}.#{dom['host']}/#{svc_key}"
+        get "/#{svc_key}", to: redirect(status: 301) { |_p, req|
+          "#{req.protocol}#{svc['subdomain']}.#{dom['host']}/#{svc_key}"
         }
       end
     end
   end
 
-  # SERVICE ROUTES — montate SOLO sugli host permessi (subdomain + base domain)
-  # constraints DomainRoutes.service_constraint(:onlinecourses) { draw :onlinecourses }
-  # constraints DomainRoutes.service_constraint(:teaching)      { draw :teaching }
-  # constraints DomainRoutes.service_constraint(:questionnaire) { draw :questionnaire }
-  # constraints DomainRoutes.service_constraint(:blog)          { draw :blog }
+  # --- Aree generiche ---
+  resources :domain_subscriptions, only: [ :create ]
+  post   "/domains/:host/subscribe", to: "domain_subscriptions#create",          as: :subscribe_domain
+  delete "/domains/:host/subscribe", to: "domain_subscriptions#destroy_by_host", as: :unsubscribe_domain
 
-  constraints DomainRoutes.service_constraint(:onlinecourses) do
-    draw :onlinecourses
-  end
-  constraints DomainRoutes.service_constraint(:teaching) do
-    draw :teaching
-  end
-  constraints DomainRoutes.service_constraint(:questionnaire) do
-    draw :questionnaire
-  end
-  constraints DomainRoutes.service_constraint(:blog) do
-    draw :blog
-  end
-  # --- Altre aree dell'app (non legate ai domini/servizi) ---
+  draw :dashboard
   draw :superadmin
   draw :admin
   draw :generaimpresa
   draw :impegno
 
-  resources :domains,   only: %i[index show]
-  get "dashboard/user"
-  resources :contacts,  only: %i[new create]
+  resources :domains, only: %i[index show]
 
   scope module: :users do
-    resource :account,          only: %i[edit update]       # /account
-    resource :change_passwords, only: %i[edit update]       # /password/edit
+    resource :account,          only: %i[edit update]
+    resource :change_passwords, only: %i[edit update]
   end
 
-  resources :passwords, param: :token                       # /passwords/:token
+  resources :leads,  only: %i[new create]
+  resources :passwords, param: :token
   resource  :session
 
-
+  get "dashboard/user"
   get "pages/index"
   get "pages/about"
   get "pages/contact"
   get "insegnanti", to: "pages#insegnanti"
 
-  # Healthcheck
   get "up" => "rails/health#show", as: :rails_health_check
 
-  # (opzionale) root di fallback per host NON gestiti da DomainRegistry:
-  # root "pages#home"
+  # fallback per host non gestiti
   root "pages#home"
   get "/home", to: "pages#home", as: :pages_home
-end
+ end

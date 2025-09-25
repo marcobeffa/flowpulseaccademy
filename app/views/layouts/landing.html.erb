@@ -8,6 +8,7 @@
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
     <%= yield :head %>
+    <link rel="canonical" href="<%= canonical_url %>">
     <%# Enable PWA manifest for installable apps (make sure to enable in config/routes.rb too!) %>
     <%#= tag.link rel: "manifest", href: pwa_manifest_path(format: :json) %>
     <link rel="icon" href="/icon.png" type="image/png">
@@ -62,7 +63,8 @@
           <div class="hidden md:block">
             <div class="ml-10 flex items-baseline space-x-8">
               <%= link_to "Corso Igiene posturale",
-            onlinecourses_course_path(slug: "igiene-posturale"),
+    onlinecourses_course_url("igiene-posturale",
+      host: "flowpulse.posturacorretta.org"),
             class: "px-3 py-2 text-sm font-medium text-gray-600 hover:text-blue-600 transition-colors" %>  <%= link_to "Il Programma", root_path(anchor: "programma"), class: "px-3 py-2 text-sm font-medium text-gray-600 hover:text-blue-600 transition-colors" %>
               <%= link_to "Modalità", root_path(anchor: "modalita"), class: "px-3 py-2 text-sm font-medium text-gray-600 hover:text-blue-600 transition-colors" %>
               <%= link_to "Il Tuo Profilo", root_path(anchor: "profili"), class: "px-3 py-2 text-sm font-medium text-gray-600 hover:text-blue-600 transition-colors" %>
@@ -72,7 +74,7 @@
                 <%= link_to "Vai alla dashboard", #dashboard_user_path,
                   class: "rounded-full bg-blue-600 px-6 py-2 text-sm font-semibold text-white shadow-lg transition-all duration-300 hover:bg-blue-700 hover:shadow-xl" %>
               <% else %>
-                <%= link_to "Inizia Ora", new_contact_path,
+                <%= link_to "Inizia Ora", new_lead_path,
               class: "rounded-full bg-blue-600 px-6 py-2 text-sm font-semibold text-white shadow-lg transition-all duration-300 hover:bg-blue-700 hover:shadow-xl" %>
               <% end %>
             </div>
@@ -96,7 +98,7 @@
           class: "block rounded-md px-3 py-2 text-base font-medium text-gray-700 hover:bg-gray-100"
         %>
           <%= link_to "Il Tuo Profilo", "#profili", class: "block rounded-md px-3 py-2 text-base font-medium text-gray-700 hover:bg-gray-100" %>
-          <%= link_to "Inizia Ora", new_contact_path,
+          <%= link_to "Inizia Ora", new_lead_path,
           class: "block rounded-full bg-blue-600 px-4 py-2 text-base font-semibold text-white hover:bg-blue-700" %>
         </div>
       </div>

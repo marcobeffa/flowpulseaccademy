@@ -1,9 +1,11 @@
 namespace :admin do
     resources :users
     resources :sessions
-    resources :contacts
+    resources :leads
+    resources :catalog_items
     resources :training_courses
-    resources :scheduled_events
+    resources :catalog_items
 
-    root to: "contacts#index"
+
+    root to: "leads#index"
 end

@@ -1,0 +1,22 @@
+<div id="<%= dom_id lead %>" class="w-full sm:w-auto my-5 space-y-5">
+  <div>
+    <strong class="block font-medium mb-1">Nome:</strong>
+    <%= lead.nome %>
+  </div>
+  <div>
+    <strong class="block font-medium mb-1">Cognome:</strong>
+    <%= lead.cognome %>
+  </div>
+  <div>
+    <strong class="block font-medium mb-1">Email:</strong>
+    <%= lead.email %>
+  </div>
+  <div>
+    <strong class="block font-medium mb-1">Diventa insegnante:</strong>
+    <%= lead.diventa_insegnante? ? "Yes" : "No" %>
+  </div>
+  <div>
+    <strong class="block font-medium mb-1">Tipo utente:</strong>
+    <%= lead.tipo_utente %>
+  </div>
+</div>

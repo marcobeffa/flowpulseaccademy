@@ -10,28 +10,45 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_09_20_170916) do
+ActiveRecord::Schema[8.0].define(version: 2025_09_25_120135) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
-  create_table "contacts", force: :cascade do |t|
-    t.string "nome", null: false
-    t.string "cognome", null: false
-    t.string "email", null: false
-    t.string "telefono_facoltativo"
-    t.boolean "diventa_insegnante", default: false, null: false
-    t.integer "tipo_utente", default: 0, null: false
+  create_table "catalog_items", force: :cascade do |t|
+    t.string "host", null: false
+    t.string "service_key", null: false
+    t.string "slug", null: false
+    t.string "title", null: false
+    t.string "source_type", null: false
+    t.string "source_table"
+    t.bigint "source_id"
+    t.string "yml_path"
+    t.string "version"
+    t.datetime "published_at"
+    t.string "status"
+    t.jsonb "data", default: {}
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.decimal "lat", precision: 10, scale: 6
-    t.decimal "lng", precision: 10, scale: 6
-    t.string "address"
-    t.bigint "user_id"
-    t.bigint "responsable_contact_id"
-    t.index ["email"], name: "index_contacts_on_email", unique: true
-    t.index ["responsable_contact_id"], name: "index_contacts_on_responsable_contact_id"
-    t.index ["tipo_utente"], name: "index_contacts_on_tipo_utente"
-    t.index ["user_id"], name: "index_contacts_on_user_id"
+    t.index ["data"], name: "index_catalog_items_on_data", using: :gin
+    t.index ["host", "service_key", "slug"], name: "idx_catalog_unique", unique: true
+    t.index ["host"], name: "index_catalog_items_on_host"
+    t.index ["published_at"], name: "index_catalog_items_on_published_at"
+    t.index ["service_key"], name: "index_catalog_items_on_service_key"
+    t.index ["slug"], name: "index_catalog_items_on_slug"
+    t.index ["source_table", "source_id"], name: "index_catalog_items_on_source_table_and_source_id"
+    t.index ["status"], name: "index_catalog_items_on_status"
+  end
+
+  create_table "domain_subscriptions", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.string "host", null: false
+    t.string "title"
+    t.string "favicon_url"
+    t.datetime "subscribed_at", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["user_id", "host"], name: "index_domain_subscriptions_on_user_id_and_host", unique: true
+    t.index ["user_id"], name: "index_domain_subscriptions_on_user_id"
   end
 
   create_table "items", force: :cascade do |t|
@@ -46,6 +63,26 @@ ActiveRecord::Schema[8.0].define(version: 2025_09_20_170916) do
     t.index ["list_id"], name: "index_items_on_list_id"
   end
 
+  create_table "leads", force: :cascade do |t|
+    t.string "nome", null: false
+    t.string "cognome", null: false
+    t.string "email", null: false
+    t.string "telefono_facoltativo"
+    t.boolean "diventa_insegnante", default: false, null: false
+    t.integer "tipo_utente", default: 0, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.decimal "lat", precision: 10, scale: 6
+    t.decimal "lng", precision: 10, scale: 6
+    t.string "address"
+    t.bigint "user_id"
+    t.bigint "responsable_lead_id"
+    t.index ["email"], name: "index_leads_on_email", unique: true
+    t.index ["responsable_lead_id"], name: "index_leads_on_responsable_lead_id"
+    t.index ["tipo_utente"], name: "index_leads_on_tipo_utente"
+    t.index ["user_id"], name: "index_leads_on_user_id"
+  end
+
   create_table "lists", force: :cascade do |t|
     t.string "name"
     t.datetime "created_at", null: false
@@ -53,7 +90,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_09_20_170916) do
   end
 
   create_table "scheduled_events", force: :cascade do |t|
-    t.bigint "contact_id", null: false
+    t.bigint "lead_id", null: false
     t.bigint "training_course_id"
     t.string "lesson_slug"
     t.datetime "start_at"
@@ -61,7 +98,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_09_20_170916) do
     t.text "note"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["contact_id"], name: "index_scheduled_events_on_contact_id"
+    t.index ["lead_id"], name: "index_scheduled_events_on_lead_id"
     t.index ["lesson_slug"], name: "index_scheduled_events_on_lesson_slug"
     t.index ["training_course_id"], name: "index_scheduled_events_on_training_course_id"
   end
@@ -77,7 +114,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_09_20_170916) do
 
   create_table "training_courses", force: :cascade do |t|
     t.string "course_slug"
-    t.bigint "contact_id", null: false
+    t.bigint "lead_id", null: false
     t.string "version"
     t.datetime "registrations_open_at"
     t.datetime "registrations_close_at"
@@ -95,8 +132,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_09_20_170916) do
     t.integer "participants_count"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["contact_id"], name: "index_training_courses_on_contact_id"
     t.index ["course_slug"], name: "index_training_courses_on_course_slug"
+    t.index ["lead_id"], name: "index_training_courses_on_lead_id"
     t.index ["package_slug"], name: "index_training_courses_on_package_slug"
   end
 
@@ -110,11 +147,12 @@ ActiveRecord::Schema[8.0].define(version: 2025_09_20_170916) do
     t.index ["superadmin"], name: "index_users_on_superadmin"
   end
 
-  add_foreign_key "contacts", "contacts", column: "responsable_contact_id"
-  add_foreign_key "contacts", "users"
+  add_foreign_key "domain_subscriptions", "users"
   add_foreign_key "items", "lists"
-  add_foreign_key "scheduled_events", "contacts"
+  add_foreign_key "leads", "leads", column: "responsable_lead_id"
+  add_foreign_key "leads", "users"
+  add_foreign_key "scheduled_events", "leads"
   add_foreign_key "scheduled_events", "training_courses"
   add_foreign_key "sessions", "users"
-  add_foreign_key "training_courses", "contacts"
+  add_foreign_key "training_courses", "leads"
 end

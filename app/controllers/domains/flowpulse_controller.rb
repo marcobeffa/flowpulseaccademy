@@ -1,14 +1,9 @@
 # frozen_string_literal: true
 
+# app/controllers/domains/flowpulse_controller.rb
 module Domains
-  class FlowpulseController < ApplicationController
-    def home
-      @domains  = DomainRegistry.domains.values.sort_by { |d| d["host"] }
-      @services = DomainRegistry.services.values.sort_by { |s| s["key"] }
-      @superadmin = current_user&.respond_to?(:superadmin?) && current_user.superadmin?
-      @user_hosts = current_user ? current_user.domain_subscriptions.pluck(:host) : []
-      @proto = request.protocol
-      @port  = request.port && ![ 80, 443 ].include?(request.port) ? ":#{request.port}" : ""
-    end
+  class FlowpulseController < BrandBaseController
+    self.default_brand_slug = "flowpulse"
+    # def about; super; end  # (solo se vuoi personalizzare)
   end
 end

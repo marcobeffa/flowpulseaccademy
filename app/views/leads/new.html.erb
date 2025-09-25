@@ -1,0 +1,8 @@
+<% content_for :title, "New lead" %>
+<!-- app/views/leads/new.html.erb -->
+<% if authenticated? %>
+  Autenticato
+<% end %>
+<div class="mt-24 rounded-2xl bg-white p-6 shadow max-w-lg mx-auto">
+  <%= render "form", lead: @lead %>
+</div>

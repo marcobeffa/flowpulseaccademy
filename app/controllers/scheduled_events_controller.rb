@@ -65,6 +65,6 @@ class ScheduledEventsController < ApplicationController
 
     # Only allow a list of trusted parameters through.
     def scheduled_event_params
-      params.expect(scheduled_event: [ :contact_id, :training_course_id, :lesson_slug, :start_at, :end_at, :note ])
+      params.expect(scheduled_event: [ :lead_id, :training_course_id, :lesson_slug, :start_at, :end_at, :note ])
     end
 end

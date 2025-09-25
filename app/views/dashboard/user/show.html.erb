@@ -1,0 +1,327 @@
+<!-- app/views/dashboard/user/show.html.erb -->
+<div class="max-w-7xl mx-auto px-4 py-8">
+  <h1 class="text-2xl font-semibold mb-4">La tua dashboard</h1>
+  <% if @brands.blank? %>
+    <p class="text-gray-600">Non hai brand attivati. Vai alla pagina Flowpulse per attivarne uno.</p>
+  <% else %>
+    <%# CONTEXT: se sono su flowpulse.<brand> e il path include /<service_key>, evidenzio il servizio %>
+    <% if @ctx[:service_key].present? %>
+      <div class="mb-4 text-sm text-gray-600">
+        Contesto: <strong><%= @ctx[:base_host] %></strong> — servizio
+        <span class="inline-block px-2 py-0.5 border rounded"><%= @ctx[:service_key] %></span>
+      </div>
+    <% end %>
+    <% @brands.each do |host, dom| %>
+      <div class="mb-8 border rounded-xl p-4">
+        <div class="flex items-center justify-between mb-2">
+          <h2 class="text-xl font-semibold"><%= dom.dig("seo","title") || host %></h2>
+          <div class="text-sm text-gray-500"><%= dom["description"] %></div>
+        </div>
+        <% active = @active_services[host] || [] %>
+        <div class="flex flex-wrap gap-2 mb-4">
+          <% active.each do |key| %>
+            <% url = service_url_for(key, host: host) %>
+            <a href="<%= url %>" class="px-3 py-1 text-sm border rounded hover:bg-gray-50">
+              <%= DomainRegistry.service(key).try { |s| s["title"] } || key.humanize %>
+            </a>
+          <% end %>
+        </div>
+        <% items = @items.select { |ci| ci.host == host } %>
+        <% if items.any? %>
+          <div class="grid gap-3 md:grid-cols-2 lg:grid-cols-3">
+            <% items.each do |ci| %>
+              <div class="border rounded-lg p-3">
+                <div class="text-xs uppercase text-gray-500 mb-1"><%= ci.service_key %></div>
+                <div class="font-medium mb-1"><%= ci.title %></div>
+                <% if ci.published_at %>
+                  <div class="text-xs text-gray-400 mb-2"><%= l(ci.published_at.to_date) %></div>
+                <% end %>
+                <%# URL pubblico: https://<sub>.<host>/<service_key>/<slug> %>
+                <% href = service_url_for(ci.service_key, host: ci.host, path: ci.slug) %>
+                <a href="<%= href %>" class="inline-block text-sm px-3 py-1 border rounded-md hover:bg-gray-50">Apri</a>
+              </div>
+            <% end %>
+          </div>
+        <% else %>
+          <div class="text-sm text-gray-500">Nessun contenuto recente.</div>
+        <% end %>
+      </div>
+    <% end %>
+  <% end %>
+</div>
+<!-- app/views/dashboard/user.html.erb -->
+<h1 class="text-2xl font-semibold mb-4">I tuoi domini</h1>
+<% if Current.user.domain_subscriptions.empty? %>
+  <p class="text-gray-600">Non hai domini attivati.</p>
+<% else %>
+  <div class="grid gap-4 md:grid-cols-2">
+    <% Current.user.domain_subscriptions.each do |sub| %>
+      <% dom = DomainRegistry.domains[sub.host] %>
+      <div class="border rounded-xl p-4">
+        <div class="flex items-center gap-2 mb-2">
+          <% if sub.favicon_url.present? %>
+            <img src="<%= sub.favicon_url %>" alt="" class="w-5 h-5">
+          <% end %>
+          <div class="font-medium"><%= dom.dig("seo","title") || sub.host %></div>
+        </div>
+        <div class="text-sm text-gray-600 mb-3"><%= dom["description"] %></div>
+        <div class="flex flex-wrap gap-2">
+          <% Array(dom["active_services"]).each do |svc_key| %>
+            <% svc = DomainRegistry.service(svc_key) %>
+            <% next unless svc %>
+            <% url = view_context.service_url_for(svc_key, path: nil).gsub(/^https?:\/\/[^\/]+/, "https://#{svc['subdomain']}.#{dom['host']}") %>
+            <%= link_to (svc["title"] || svc_key.to_s.humanize), "#{url}/#{svc_key}",
+                  class: "px-3 py-1 text-sm rounded-md border hover:bg-gray-50" %>
+          <% end %>
+        </div>
+        <div class="mt-3">
+          <%= button_to "Disattiva",
+                unsubscribe_domain_path(host: sub.host),
+                method: :delete,
+                class: "text-xs text-red-700 hover:underline" %>
+        </div>
+      </div>
+    <% end %>
+  </div>
+<% end %>
+# app/views/dashboard/index.html.erb
+<% content_for :page_title, "Dashboard" %>
+<% content_for :page_header do %>
+  <div class="mb-8">
+    <!-- Breadcrumbs -->
+    <%= render 'shared/dashboard/breadcrumbs', breadcrumbs: [
+      { name: "Dashboard", path: dashboard_user_path }
+    ] %>
+    <div class="md:flex md:items-center md:justify-between">
+      <div class="min-w-0 flex-1">
+        <h1 class="text-2xl font-bold leading-7 text-gray-900 sm:truncate sm:text-3xl sm:tracking-tight">
+          Panoramica Dashboard
+        </h1>
+        <p class="mt-1 text-sm text-gray-500">
+          Benvenuto nel tuo centro di controllo per l'Igiene Posturale
+        </p>
+      </div>
+      <div class="mt-4 flex md:ml-4 md:mt-0">
+        <%= link_to "Nuovo Paziente", new_lead_path, 
+            class: "ml-3 inline-flex items-center rounded-md bg-blue-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600" %>
+      </div>
+    </div>
+  </div>
+<% end %>
+<!-- Stats Cards -->
+<div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4 mb-8">
+  <!-- Pazienti Attivi -->
+  <div class="overflow-hidden rounded-lg bg-white px-4 py-5 shadow sm:p-6">
+    <div class="flex items-center">
+      <div class="flex-shrink-0">
+        <div class="rounded-md bg-blue-500 p-3">
+          <svg class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z" />
+          </svg>
+        </div>
+      </div>
+      <div class="ml-5 w-0 flex-1">
+        <dl>
+          <dt class="text-sm font-medium text-gray-500 truncate">Pazienti Attivi</dt>
+          <dd class="text-lg font-medium text-gray-900">127</dd>
+        </dl>
+      </div>
+    </div>
+  </div>
+  <!-- Sessioni Completate -->
+  <div class="overflow-hidden rounded-lg bg-white px-4 py-5 shadow sm:p-6">
+    <div class="flex items-center">
+      <div class="flex-shrink-0">
+        <div class="rounded-md bg-green-500 p-3">
+          <svg class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+        </div>
+      </div>
+      <div class="ml-5 w-0 flex-1">
+        <dl>
+          <dt class="text-sm font-medium text-gray-500 truncate">Sessioni Completate</dt>
+          <dd class="text-lg font-medium text-gray-900">1,428</dd>
+        </dl>
+      </div>
+    </div>
+  </div>
+  <!-- Iscrizioni Attivi -->
+  <div class="overflow-hidden rounded-lg bg-white px-4 py-5 shadow sm:p-6">
+    <div class="flex items-center">
+      <div class="flex-shrink-0">
+        <div class="rounded-md bg-yellow-500 p-3">
+          <svg class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
+          </svg>
+        </div>
+      </div>
+      <div class="ml-5 w-0 flex-1">
+        <dl>
+          <dt class="text-sm font-medium text-gray-500 truncate">Iscrizioni Attivi</dt>
+          <dd class="text-lg font-medium text-gray-900">24</dd>
+        </dl>
+      </div>
+    </div>
+  </div>
+  <!-- Tasso Completamento -->
+  <div class="overflow-hidden rounded-lg bg-white px-4 py-5 shadow sm:p-6">
+    <div class="flex items-center">
+      <div class="flex-shrink-0">
+        <div class="rounded-md bg-purple-500 p-3">
+          <svg class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 013 19.875v-6.75zM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V8.625zM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V4.125z" />
+          </svg>
+        </div>
+      </div>
+      <div class="ml-5 w-0 flex-1">
+        <dl>
+          <dt class="text-sm font-medium text-gray-500 truncate">Tasso Completamento</dt>
+          <dd class="text-lg font-medium text-gray-900">78%</dd>
+        </dl>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- Content Grid -->
+<div class="grid grid-cols-1 gap-6 lg:grid-cols-12">
+  <!-- Recent Activity -->
+  <div class="lg:col-span-8">
+    <div class="overflow-hidden bg-white shadow rounded-lg">
+      <div class="p-6">
+        <div class="flex items-center justify-between mb-4">
+          <h3 class="text-lg font-medium text-gray-900">Attività Recenti</h3>
+          <%= link_to "Vedi tutto", "#", class: "text-sm text-blue-600 hover:text-blue-500" %>
+        </div>
+        <div class="flow-root">
+          <ul role="list" class="-mb-8">
+            <li class="relative pb-8">
+              <div class="relative flex space-x-3">
+                <div>
+                  <span class="bg-green-500 h-8 w-8 rounded-full flex items-center justify-center ring-8 ring-white">
+                    <svg class="h-5 w-5 text-white" viewBox="0 0 20 20" fill="currentColor">
+                      <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                    </svg>
+                  </span>
+                </div>
+                <div class="min-w-0 flex-1 pt-1.5 flex justify-between space-x-4">
+                  <div>
+                    <p class="text-sm text-gray-500">
+                      <strong class="font-medium text-gray-900">Mario Rossi</strong> ha completato la Settimana 2
+                    </p>
+                  </div>
+                  <div class="text-right text-sm whitespace-nowrap text-gray-500">
+                    2 ore fa
+                  </div>
+                </div>
+              </div>
+              <div class="absolute top-4 left-4 -ml-px h-full w-0.5 bg-gray-200" aria-hidden="true"></div>
+            </li>
+            <li class="relative pb-8">
+              <div class="relative flex space-x-3">
+                <div>
+                  <span class="bg-blue-500 h-8 w-8 rounded-full flex items-center justify-center ring-8 ring-white">
+                    <svg class="h-5 w-5 text-white" viewBox="0 0 20 20" fill="currentColor">
+                      <path d="M8 9a3 3 0 100-6 3 3 0 000 6zM8 11a6 6 0 016 6H2a6 6 0 016-6z" />
+                    </svg>
+                  </span>
+                </div>
+                <div class="min-w-0 flex-1 pt-1.5 flex justify-between space-x-4">
+                  <div>
+                    <p class="text-sm text-gray-500">
+                      Nuovo paziente: <strong class="font-medium text-gray-900">Laura Bianchi</strong>
+                    </p>
+                  </div>
+                  <div class="text-right text-sm whitespace-nowrap text-gray-500">
+                    4 ore fa
+                  </div>
+                </div>
+              </div>
+              <div class="absolute top-4 left-4 -ml-px h-full w-0.5 bg-gray-200" aria-hidden="true"></div>
+            </li>
+            <li class="relative pb-8">
+              <div class="relative flex space-x-3">
+                <div>
+                  <span class="bg-yellow-500 h-8 w-8 rounded-full flex items-center justify-center ring-8 ring-white">
+                    <svg class="h-5 w-5 text-white" viewBox="0 0 20 20" fill="currentColor">
+                      <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
+                    </svg>
+                  </span>
+                </div>
+                <div class="min-w-0 flex-1 pt-1.5 flex justify-between space-x-4">
+                  <div>
+                    <p class="text-sm text-gray-500">
+                      <strong class="font-medium text-gray-900">Giuseppe Verdi</strong> ha saltato 2 sessioni
+                    </p>
+                  </div>
+                  <div class="text-right text-sm whitespace-nowrap text-gray-500">
+                    1 giorno fa
+                  </div>
+                </div>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- Quick Actions -->
+  <div class="lg:col-span-4">
+    <div class="overflow-hidden bg-white shadow rounded-lg">
+      <div class="p-6">
+        <h3 class="text-lg font-medium text-gray-900 mb-4">Azioni Rapide</h3>
+        <div class="space-y-3">
+          <%= link_to new_lead_path, 
+              class: "w-full flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500" do %>
+            <svg class="mr-3 h-5 w-5 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
+              <path d="M8 9a3 3 0 100-6 3 3 0 000 6zM8 11a6 6 0 016 6H2a6 6 0 016-6z" />
+            </svg>
+            Aggiungi Paziente
+          <% end %>
+          <%= link_to new_teaching_training_course_path,
+              class: "w-full flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500" do %>
+            <svg class="mr-3 h-5 w-5 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" />
+            </svg>
+            Nuovo Programma
+          <% end %>
+          <%#= link_to analytics_path, 
+              class: "w-full flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500" do %>
+            <!--svg class="mr-3 h-5 w-5 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
+              <path d="M2 11a1 1 0 011-1h2a1 1 0 011 1v5a1 1 0 01-1 1H3a1 1 0 01-1-1v-5zM8 7a1 1 0 011-1h2a1 1 0 011 1v9a1 1 0 01-1 1H9a1 1 0 01-1-1V7zM14 4a1 1 0 011-1h2a1 1 0 011 1v12a1 1 0 01-1 1h-2a1 1 0 01-1-1V4z" />
+            </svg>
+            Visualizza Report-->
+            <%# end %>
+          </div>
+        </div>
+      </div>
+      <!-- Quick Stats -->
+      <div class="mt-6 overflow-hidden bg-white shadow rounded-lg">
+        <div class="p-6">
+          <h3 class="text-lg font-medium text-gray-900 mb-4">Statistiche Veloci</h3>
+          <dl class="space-y-3">
+            <div class="flex justify-between">
+              <dt class="text-sm text-gray-500">Sessioni Oggi</dt>
+              <dd class="text-sm font-medium text-gray-900">12</dd>
+            </div>
+            <div class="flex justify-between">
+              <dt class="text-sm text-gray-500">Nuovi questa settimana</dt>
+              <dd class="text-sm font-medium text-gray-900">3</dd>
+            </div>
+            <div class="flex justify-between">
+              <dt class="text-sm text-gray-500">Completamenti mese</dt>
+              <dd class="text-sm font-medium text-gray-900">84</dd>
+            </div>
+          </dl>
+        </div>
+      </div>
+    </div>
+  </div>
+  <header class="sticky top-0 z-40 border-b border-slate-200 bg-white/80 backdrop-blur">
+    <div class="mx-auto max-w-5xl px-4 py-3 flex items-center justify-between">
+      <div class="font-semibold">Flowpulse</div>
+      <nav class="text-sm">
+        <%#= link_to "Corsi", onlinecourses_courses_path, class: "hover:underline" %>
+      </nav>
+    </div>
+  </header>

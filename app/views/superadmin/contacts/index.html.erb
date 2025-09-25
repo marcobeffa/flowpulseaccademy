@@ -13,7 +13,7 @@
     } %>
     <% tabs.each do |key, label| %>
       <%= link_to label,
-          superadmin_contacts_path(tab: key),
+          superadmin_leads_path(tab: key),
           class: "px-4 py-2 text-sm font-medium rounded-lg #{(@tab == key) ? 'bg-white shadow text-slate-900' : 'text-slate-600 hover:text-slate-900'}" %>
     <% end %>
   </div>
@@ -22,8 +22,8 @@
 <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pb-12">
   <div class="overflow-hidden rounded-2xl bg-white shadow">
     <div class="px-6 py-4 border-b border-slate-200 flex items-center justify-between">
-      <h2 class="text-lg font-semibold text-slate-900">Elenco <span class="text-slate-500">(<%= @contacts.size %>)</span></h2>
-      <p class="text-sm text-slate-500">URL: /superadmin/indexcontact</p>
+      <h2 class="text-lg font-semibold text-slate-900">Elenco <span class="text-slate-500">(<%= @leads.size %>)</span></h2>
+      <p class="text-sm text-slate-500">URL: /superadmin/indexlead</p>
     </div>
     <div class="overflow-x-auto">
       <table class="min-w-full divide-y divide-slate-200">
@@ -37,17 +37,17 @@
           </tr>
         </thead>
         <tbody class="divide-y divide-slate-100">
-          <% @contacts.each do |contact| %>
+          <% @leads.each do |lead| %>
             <tr class="hover:bg-slate-50/60 align-top">
-              <%= form_with model: contact,
-                    url: superadmin_contact_path(contact),
+              <%= form_with model: lead,
+                    url: superadmin_lead_path(lead),
                     method: :patch,
                     local: true do |f| %>
                 <!-- Nome/Cognome + info -->
                 <td class="px-4 py-3 w-[28%]">
-                  <%= link_to superadmin_contact_path(contact) do %>
+                  <%= link_to superadmin_lead_path(lead) do %>
                     <div class="text-xs text-slate-500 mb-1">
-                      <%= l(contact.created_at, format: :short) %> • ID <%= contact.id %>
+                      <%= l(lead.created_at, format: :short) %> • ID <%= lead.id %>
                     </div>
                     <!-- Se vuoi in sola lettura, lascia così; se vuoi inline-edit, scommenta i text_field -->
                     <div class="text-sm">
@@ -61,13 +61,13 @@
                     class: "w-full rounded-md border-2 border-slate-200 bg-slate-50 px-3 py-2 text-sm focus:border-blue-500 focus:bg-white focus:outline-none" %>
             </div>
             -->
-                      <div><%= contact.nome %></div>
-                      <div class="font-semibold"><%= contact.cognome %></div>
+                      <div><%= lead.nome %></div>
+                      <div class="font-semibold"><%= lead.cognome %></div>
                     </div>
                   <% end %>
                   <div class="mt-2">
                     <%# badge tipo_utente (adatta ai tuoi enum) %>
-                    <% case contact.tipo_utente.to_s
+                    <% case lead.tipo_utente.to_s
                when "utente" %>
                       <span class="rounded-2xl bg-blue-600 px-2 py-0.5 text-xs font-semibold text-white">Educazione</span>
                     <% when "professionista_benessere" %>
@@ -75,7 +75,7 @@
                     <% when "professionista_salute" %>
                       <span class="rounded-2xl bg-red-600 px-2 py-0.5 text-xs font-semibold text-white">Patologia</span>
                     <% else %>
-                      <span class="rounded-2xl bg-slate-500 px-2 py-0.5 text-xs font-semibold text-white"><%= contact.tipo_utente %></span>
+                      <span class="rounded-2xl bg-slate-500 px-2 py-0.5 text-xs font-semibold text-white"><%= lead.tipo_utente %></span>
                     <% end %>
                   </div>
                 </td>
@@ -91,22 +91,22 @@
                   class: "w-full rounded-md border-2 border-slate-200 bg-slate-50 px-3 py-2 text-sm focus:border-blue-500 focus:bg-white focus:outline-none" %>
           </div>
           -->
-                  <div class="text-sm"><%= contact.email %></div>
-                  <div class="text-sm text-slate-600"><%= contact.telefono_facoltativo.presence || "—" %></div>
+                  <div class="text-sm"><%= lead.email %></div>
+                  <div class="text-sm text-slate-600"><%= lead.telefono_facoltativo.presence || "—" %></div>
                 </td>
                 <!-- Responsabile / Referral -->
                 <td class="px-4 py-3 w-[22%]">
-                  <% if contact.responsable_contact_id.present? %>
-                    <% ref = Contact.find_by(id: contact.responsable_contact_id) %>
+                  <% if lead.responsable_lead_id.present? %>
+                    <% ref = Lead.find_by(id: lead.responsable_lead_id) %>
                     <div class="text-sm">
-                      Resp. ID: <%= contact.responsable_contact_id %>
+                      Resp. ID: <%= lead.responsable_lead_id %>
                       <% if ref %> • <span class="text-slate-600"><%= ref.email %></span><% end %>
                     </div>
                   <% else %>
                     <div class="mt-2">
-                      <%= f.label :responsable_contact_id, "Imposta responsabile", class: "block text-xs font-semibold text-slate-600 mb-1" %>
-                      <%= f.select :responsable_contact_id,
-                  options_from_collection_for_select(@contacts.where.not(user_id: nil), :id, :email, contact.responsable_contact_id),
+                      <%= f.label :responsable_lead_id, "Imposta responsabile", class: "block text-xs font-semibold text-slate-600 mb-1" %>
+                      <%= f.select :responsable_lead_id,
+                  options_from_collection_for_select(@leads.where.not(user_id: nil), :id, :email, lead.responsable_lead_id),
                   { include_blank: "— Nessuno —" },
                   class: "w-full rounded-md border-2 border-slate-200 bg-white px-3 py-2 text-sm focus:border-blue-500 focus:outline-none",
                   onchange: "this.form.submit()" %>
@@ -115,14 +115,14 @@
                 </td>
                 <!-- User -->
                 <td class="px-4 py-3 w-[10%]">
-                  <% if contact.user.present? %>
+                  <% if lead.user.present? %>
                     <span class="inline-flex items-center rounded-full bg-green-100 px-3 py-1 text-xs font-semibold text-green-800">
-                      <%= contact.user.email_address %>
+                      <%= lead.user.email_address %>
                     </span>
                   <% else %>
                     <div class="text-xs text-slate-500 mb-2">Nessun utente</div>
                     <!-- Crea utente da contatto -->
-                    <%= form_with url: superadmin_create_user_path(contact, tab: @tab), method: :post, local: true do %>
+                    <%= form_with url: superadmin_create_user_path(lead, tab: @tab), method: :post, local: true do %>
                       <%= submit_tag "Crea utente",
                   data: { turbo_confirm: "Creare un nuovo utente con questa email e collegarlo?" },
                   class: "rounded-md bg-orange-600 px-3 py-2 text-xs font-semibold text-white hover:bg-orange-700" %>

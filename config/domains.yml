@@ -34,8 +34,8 @@ services:
     image_url: null
     state: develop
     data_source: db
-    yml_root: null
-    db_table: questionnaires
+    yml_root: "config/teaching"
+    db_table: null
     allow_root_domain_path: false
 
   - key: blog
@@ -61,6 +61,7 @@ domains:
     url_landing: "domains/flowpulse#home"   # controller#action OR a template path OR an absolute URL
     favicon_url: "/favicons/flowpulse/favicon.ico"
     active_services: [ onlinecourses, teaching, questionnaire, blog ]
+    pages: [  ]   # ← PAGINE EXTRA solo per questo brand
     seo:
       title: "Flowpulse — Accademia salute, lavoro e crescita"
       description: "Percorsi, corsi e strumenti per la salute e la crescita personale/professionale."
@@ -85,6 +86,7 @@ domains:
     url_landing: "domains/posturacorretta#home"
     favicon_url: "/favicons/posturacorretta/favicon.ico"
     active_services: [ onlinecourses, blog ]
+    pages: [  ]   # ← PAGINE EXTRA solo per questo brand
     seo:
       title: "PosturaCorretta — Prevenzione e movimento"
       description: "Linee guida e programmi per la postura e la prevenzione."
@@ -109,6 +111,7 @@ domains:
     url_landing: "domains/igieneposturale#home"
     favicon_url: "/favicons/igieneposturale/favicon.ico"
     active_services: [ onlinecourses ]
+    pages: [  ]   # ← PAGINE EXTRA solo per questo brand
     seo:
       title: "Igiene Posturale — Programma ufficiale"
       description: "Riattiva le articolazioni e togli tensioni da collo e spalle."
@@ -133,6 +136,7 @@ domains:
     url_landing: "domains/stopaldolore#home"
     favicon_url: "/favicons/stopaldolore/favicon.ico"
     active_services: [ onlinecourses, blog ]
+    pages: [  ]   # ← PAGINE EXTRA solo per questo brand
     seo:
       title: "Stop al Dolore — Linee guida e strumenti"
       description: "Dalla valutazione al percorso: risorse per il dolore acuto e cronico."
@@ -157,6 +161,7 @@ domains:
     url_landing: "domains/benessereintegrato#home"
     favicon_url: "/favicons/benessereintegrato/favicon.ico"
     active_services: [ blog ]
+    pages: [  ]   # ← PAGINE EXTRA solo per questo brand
     seo:
       title: "Benessere Integrato — Percorsi concreti"
       description: "Prevenzione e stili di vita integrati con professionisti."
@@ -181,6 +186,7 @@ domains:
     url_landing: "domains/generaimpresa#home"
     favicon_url: "/favicons/generaimpresa/favicon.ico"
     active_services: []
+    pages: [  ]   # ← PAGINE EXTRA solo per questo brand
     seo:
       title: "GeneraImpresa — Strumenti e processi"
       description: "Progetti, liste, ticket e flussi per fare impresa."
@@ -205,6 +211,7 @@ domains:
     url_landing: "domains/impegno#home"
     favicon_url: "/favicons/1impegno/favicon.ico"
     active_services: []
+    pages: [  ]   # ← PAGINE EXTRA solo per questo brand
     seo:
       title: "1Impegno — Pianifica e realizza"
       description: "Calendar, focus e routine per il tuo lavoro e benessere."
@@ -229,6 +236,7 @@ domains:
     url_landing: "domains/rails4b#home"
     favicon_url: "/favicons/rails4b/favicon.ico"
     active_services: []
+    pages: [  ]   # ← PAGINE EXTRA solo per questo brand
     seo:
       title: "Rails4B — Rails for Business"
       description: "Toolkit e guide per imprenditori che usano Rails."
@@ -253,6 +261,7 @@ domains:
     url_landing: "domains/markpostura#home"
     favicon_url: "/favicons/markpostura/favicon.ico"
     active_services: []
+    pages: [  ]   # ← PAGINE EXTRA solo per questo brand
     seo:
       title: "Mark Postura — Progetti e visione"
       description: "Contenuti personali, idee e progetti correlati a PosturaCorretta."
@@ -277,6 +286,7 @@ domains:
     url_landing: "domains/ilgiardinodelcorpo#home"
     favicon_url: "/favicons/ilgiardinodelcorpo/favicon.ico"
     active_services: [ blog ]
+    pages: [  ]   # ← PAGINE EXTRA solo per questo brand
     seo:
       title: "Il Giardino del Corpo — Evoluzione armonica"
       description: "Spazio di ricerca tra corpo, coscienza e vita."

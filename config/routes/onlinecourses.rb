@@ -1,14 +1,28 @@
-# config/routes/onlinecourses.rb
-# final URL example: https://flowpulse.posturacorretta.org/onlinecourses/...
-
-
-scope path: "/onlinecourses", module: "onlinecourses", as: :onlinecourses do
-  # Example routes (adapt to your controllers)
+# Final URLs:
+# /onlinecourses                          → CatalogController#index
+# /onlinecourses/categories/*taxonomy     → CatalogController#index
+# /onlinecourses/:slug                    → CoursesController#show
+# /onlinecourses/:course_slug/lezioni/:slug → LessonsController#show
+scope path: "onlinecourses", as: :onlinecourses do
   get "/", to: "catalog#index", as: :catalog
-  get "/categories/*taxonomy", to: "catalog#index", as: :category
+  get "categories/*taxonomy", to: "catalog#index", as: :category
 
-
-  resources :courses, only: %i[index show], param: :slug, path: "/corsi" do
-    resources :lessons, only: %i[show], param: :slug, path: "/lezioni"
+  # show su /onlinecourses/:slug
+  resources :courses, only: [ :show ], param: :slug, path: "" do
+    # show su /onlinecourses/:course_slug/lezioni/:slug
+    resources :lessons, only: [ :show ], param: :slug, path: "lezioni"
   end
 end
+
+
+
+# <%= link_to "Catalogo", onlinecourses_catalog_path %>
+
+
+
+# corso: <%= link_to "Igiene posturale", onlinecourses_course_path("igiene-posturale") %>
+
+
+# Lezione <%= link_to "Lezione 1", onlinecourses_course_lesson_path("igiene-posturale", "lezione-1") %>
+
+# Link assoluto con host: <%= link_to "Igiene posturale",   onlinecourses_course_url("igiene-posturale", host: "flowpulse.posturacorretta.org:3000") %>

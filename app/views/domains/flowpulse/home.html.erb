@@ -1,5 +1,193 @@
 <!-- app/views/domains/flowpulse/home.html.erb -->
-<div class="container mx-auto py-10">
-  <h1 class="text-3xl font-bold">Flowpulse</h1>
-  <p class="mt-2 text-gray-600">Accademia salute, lavoro e crescita personale.</p>
-</div>
+<!DOCTYPE html>
+<html lang="it">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Flowpulse — Domini & Servizi</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+      .card:hover { box-shadow: 0 10px 25px rgba(0,0,0,.06); transform: translateY(-2px); }
+      .badge { font-size:.7rem; line-height:1; padding:.35rem .5rem; border-radius:9999px; border:1px solid #e5e7eb; }
+      .cover { background-image: linear-gradient(135deg, #e0e7ff, #f5f3ff); }
+    </style>
+  </head>
+  <body class="min-h-screen bg-gray-50 text-gray-900">
+    <%# ---------- setup dati ---------- %>
+    <% doms      = DomainRegistry.domains.values.sort_by { |d| d["host"] } %>
+    <% services  = DomainRegistry.services.values.sort_by { |s| s["title"].to_s } %>
+    <% user_subs = (Current.user&.domain_subscriptions&.pluck(:host) || []) rescue [] %>
+    <% proto = request.protocol %>
+    <% port  = (request.port && ![80,443].include?(request.port)) ? ":#{request.port}" : "" %>
+    <div class="max-w-7xl mx-auto px-4 py-10">
+      <header class="flex flex-wrap items-center justify-between gap-4 mb-8">
+        <div class="min-w-0">
+          <h1 class="text-3xl font-bold">Domini Flowpulse</h1>
+          <p class="text-sm text-gray-600">
+            Attiva i brand (domini) che vuoi vedere nella tua dashboard. I servizi del dominio sono resi disponibili in base a <code>active_services</code> del registry.
+          </p>
+        </div>
+        <div class="flex items-center gap-2">
+          <label class="flex items-center gap-2 text-sm">
+            <input id="only-subscribed" type="checkbox" class="h-4 w-4" />
+            Mostra solo attivati
+          </label>
+          <input id="search" type="search" placeholder="Cerca dominio…" class="px-3 py-2 border border-gray-300 rounded-lg text-sm">
+        </div>
+      </header>
+      <%# ---------- GRID DOMINI (BRAND) ---------- %>
+      <section class="space-y-4 mb-12">
+        <div class="flex items-end justify-between gap-3">
+          <h2 class="text-xl font-semibold">Brand (Domini)</h2>
+          <span class="text-sm text-gray-500"><%= doms.size %> elementi</span>
+        </div>
+        <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3" id="domains-grid">
+          <% doms.each do |dom| %>
+            <% host  = dom["host"] %>
+            <% seo   = dom["seo"] || {} %>
+            <% title = seo["title"].presence || host %>
+            <% desc  = dom["description"].presence || seo["description"] %>
+            <% fav   = dom["favicon_url"].presence %>
+            <% active = user_subs.include?(host) %>
+            <article class="card rounded-xl border border-gray-200 bg-white overflow-hidden transition-all"
+                   data-title="<%= title.to_s.downcase %>"
+                   data-subscribed="<%= active %>">
+              <div class="cover aspect-[16/9] flex items-center justify-between px-4">
+                <div class="flex items-center gap-3">
+                  <% if fav %>
+                    <img src="<%= fav %>" alt="" class="w-8 h-8 rounded-md">
+                  <% else %>
+                    <div class="w-8 h-8 rounded-md bg-white/70 flex items-center justify-center font-bold text-gray-700">
+                      <%= host.first.upcase %>
+                    </div>
+                  <% end %>
+                  <div>
+                    <div class="text-gray-700 text-sm"><%= host %></div>
+                    <div class="text-xs text-gray-500">Servizi: <%= Array(dom["active_services"]).map(&:to_s).join(", ").presence || "—" %></div>
+                  </div>
+                </div>
+                <span class="badge <%= active ? 'bg-green-50 text-green-700 border-green-200' : 'bg-gray-50 text-gray-700' %>">
+                  <%= active ? 'Attivo' : 'Non attivo' %>
+                </span>
+              </div>
+              <div class="p-4 flex flex-col gap-3">
+                <h3 class="font-semibold text-gray-900 leading-tight"><%= title %></h3>
+                <% if desc.present? %>
+                  <p class="text-sm text-gray-600"><%= desc %></p>
+                <% end %>
+                <div class="flex flex-wrap gap-2 mt-1">
+                  <% if Current.user %>
+                    <% if active %>
+                      <%= button_to "Disattiva",
+                          unsubscribe_domain_path(host: host),
+                          method: :delete,
+                          class: "px-3 py-2 text-sm rounded-lg border border-red-600 text-red-700 hover:bg-red-50" %>
+                    <% else %>
+                      <%= button_to "Attiva",
+                          subscribe_domain_path(host: host),
+                          method: :post,
+                          class: "px-3 py-2 text-sm rounded-lg border border-green-600 text-white bg-green-600 hover:bg-green-700" %>
+                    <% end %>
+                  <% else %>
+                    <%= link_to "Accedi per attivare",
+                        (defined?(new_session_path) ? new_session_path : "/session/new"),
+                        class: "px-3 py-2 text-sm rounded-lg border border-blue-600 text-white bg-blue-600 hover:bg-blue-700" %>
+                  <% end %>
+                  <%# link alla landing del dominio base %>
+                  <%= link_to "Apri dominio",
+                      "#{proto}#{host}#{port}/",
+                      class: "px-3 py-2 text-sm rounded-lg border border-gray-300 hover:border-gray-400",
+                      target: "_blank", rel: "noopener" %>
+                  <%# link alla hub del sottodominio principale (flowpulse.<host>) %>
+                  <% if (sub = (DomainRegistry.service(:onlinecourses) || DomainRegistry.service("onlinecourses"))&.dig("subdomain")) %>
+                    <%= link_to "Hub",
+                        "#{proto}#{sub}.#{host}#{port}/",
+                        class: "px-3 py-2 text-sm rounded-lg border border-gray-300 hover:border-gray-400",
+                        target: "_blank", rel: "noopener" %>
+                  <% end %>
+                </div>
+              </div>
+            </article>
+          <% end %>
+        </div>
+      </section>
+      <%# ---------- GRID SERVIZI (solo superadmin) ---------- %>
+      <% if Current.user&.respond_to?(:superadmin?) && Current.user.superadmin? %>
+        <section class="space-y-4">
+          <div class="flex items-end justify-between gap-3">
+            <h2 class="text-xl font-semibold">Servizi (solo superadmin)</h2>
+            <span class="text-sm text-gray-500"><%= services.size %> elementi</span>
+          </div>
+          <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3" id="services-grid">
+            <% services.each do |svc| %>
+              <% state  = (svc["state"] || "unknown").to_s %>
+              <% badgec = state == "active" ? "bg-green-50 text-green-700 border-green-200" :
+                       state == "develop" ? "bg-yellow-50 text-yellow-700 border-yellow-200" :
+                                            "bg-gray-50 text-gray-700" %>
+              <article class="card rounded-xl border border-gray-200 bg-white overflow-hidden transition-all"
+                     data-title="<%= (svc["title"] || svc["key"]).to_s.downcase %>">
+                <div class="cover aspect-[16/9] flex items-center justify-between px-4">
+                  <div class="text-4xl font-bold text-gray-800"><%= (svc["title"] || svc["key"]).to_s.first&.upcase %></div>
+                  <span class="badge <%= badgec %>"><%= state.capitalize %></span>
+                </div>
+                <div class="p-4 flex flex-col gap-3">
+                  <h3 class="font-semibold text-gray-900 leading-tight"><%= svc["title"] || svc["key"] %></h3>
+                  <p class="text-sm text-gray-600"><%= svc["description"] %></p>
+                  <dl class="text-xs text-gray-500 grid grid-cols-2 gap-x-4 gap-y-1">
+                    <dt class="font-medium">Key</dt>
+                    <dd><code><%= svc["key"] %></code></dd>
+                    <dt class="font-medium">Subdomain</dt>
+                    <dd><code><%= svc["subdomain"] %></code></dd>
+                    <dt class="font-medium">Data source</dt>
+                    <dd><%= svc["data_source"] %></dd>
+                    <% if svc["yml_root"].present? %>
+                      <dt class="font-medium">YML root</dt>
+                      <dd><code><%= svc["yml_root"] %></code></dd>
+                    <% end %>
+                    <% if svc["db_table"].present? %>
+                      <dt class="font-medium">DB table</dt>
+                      <dd><code><%= svc["db_table"] %></code></dd>
+                    <% end %>
+                    <dt class="font-medium">Path sul dominio</dt>
+                    <dd><code>/\<<%= svc["key"] %> ></code></dd>
+                    </dl>
+                    <%# esempi host dove il servizio è montato %>
+                    <% hosts = DomainRegistry.all_service_hosts(svc["key"]) rescue [] %>
+                    <% if hosts.any? %>
+                      <div class="flex flex-wrap gap-2 mt-2">
+                        <% sample = hosts.first %>
+                        <%= link_to "Apri su #{sample}",
+                          "#{proto}#{sample}#{port}/#{svc['key']}",
+                          class: "px-3 py-2 text-sm rounded-lg border border-gray-300 hover:border-gray-400",
+                          target: "_blank", rel: "noopener" %>
+                      </div>
+                    <% end %>
+                  </div>
+                </article>
+              <% end %>
+            </div>
+          </section>
+        <% end %>
+      </div>
+      <script>
+        const $ = (s, r=document)=>r.querySelector(s);
+        const $$ = (s, r=document)=>Array.from(r.querySelectorAll(s));
+
+        function applyFilters(){
+          const onlySub = $('#only-subscribed')?.checked;
+          const q = ($('#search')?.value || '').trim().toLowerCase();
+
+          $$('#domains-grid article.card').forEach(card => {
+            const t = card.dataset.title || '';
+            const sub = card.dataset.subscribed === 'true';
+            const ok = (!q || t.includes(q)) && (!onlySub || sub);
+            card.style.display = ok ? '' : 'none';
+          });
+        }
+
+        $('#only-subscribed')?.addEventListener('change', applyFilters);
+        $('#search')?.addEventListener('input', applyFilters);
+        applyFilters();
+      </script>
+    </body>
+  </html>

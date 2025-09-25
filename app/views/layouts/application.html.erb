@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title><%= (DomainRegistry.seo_for(request.host)['title'] || 'Flowpulse') %></title>
-    <%= seo_tags_for_current_domain %>
+    <title><%= DomainRegistry.seo_for(request.host)&.dig('title') || 'Flowpulse' %></title>    <%= seo_tags_for_current_domain %>
+    <link rel="canonical" href="<%= canonical_url %>">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="mobile-web-app-capable" content="yes">

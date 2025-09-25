@@ -9,7 +9,7 @@ class ScheduledEventDashboard < Administrate::BaseDashboard
   # on pages throughout the dashboard.
   ATTRIBUTE_TYPES = {
     id: Field::Number,
-    contact: Field::BelongsTo,
+    lead: Field::BelongsTo,
     end_at: Field::DateTime,
     lesson_slug: Field::String,
     note: Field::Text,
@@ -26,7 +26,7 @@ class ScheduledEventDashboard < Administrate::BaseDashboard
   # Feel free to add, remove, or rearrange items.
   COLLECTION_ATTRIBUTES = %i[
     id
-    contact
+    lead
     end_at
     lesson_slug
   ].freeze
@@ -35,7 +35,7 @@ class ScheduledEventDashboard < Administrate::BaseDashboard
   # an array of attributes that will be displayed on the model's show page.
   SHOW_PAGE_ATTRIBUTES = %i[
     id
-    contact
+    lead
     end_at
     lesson_slug
     note
@@ -49,7 +49,7 @@ class ScheduledEventDashboard < Administrate::BaseDashboard
   # an array of attributes that will be displayed
   # on the model's form (`new` and `edit`) pages.
   FORM_ATTRIBUTES = %i[
-    contact
+    lead
     end_at
     lesson_slug
     note

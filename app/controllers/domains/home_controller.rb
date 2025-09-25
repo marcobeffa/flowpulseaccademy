@@ -1,5 +1,6 @@
 # app/controllers/domains/home_controller.rb
 class Domains::HomeController < ApplicationController
+  allow_unauthenticated_access only: %i[ show ]
    def show
     slug =
       if Current.domain&.respond_to?(:slug) then Current.domain.slug

@@ -13,18 +13,18 @@ u.superadmin = true if u.respond_to?(:superadmin) # se hai la colonna
 u.password = "123456"
 u.password_confirmation = "123456"
 
-# garantisci sempre il contact
-if u.contact.blank?
-  u.build_contact(
+# garantisci sempre il lead
+if u.lead.blank?
+  u.build_lead(
     nome: "Mario",
     cognome: "Rossi",
     email: "mario@mario.it",
     tipo_utente: 0
   )
 else
-  u.contact.email ||= u.email_address
+  u.lead.email ||= u.email_address
 end
 
 u.save!
 
-puts "[seed] user=#{u.email_address} superadmin=#{u.try(:superadmin)} contact_id=#{u.contact&.id}"
+puts "[seed] user=#{u.email_address} superadmin=#{u.try(:superadmin)} lead_id=#{u.lead&.id}"

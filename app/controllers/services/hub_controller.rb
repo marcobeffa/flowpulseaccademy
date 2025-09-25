@@ -1,6 +1,16 @@
 # app/controllers/services/hub_controller.rb
 # frozen_string_literal: true
 
+# app/controllers/services/hub_controller.rb
+module Services
+  class HubController < ApplicationController
+    def show
+      # es: mostra indice servizi o un dashboard pubblico del servizio corrente
+      render "services/hub/show"
+    end
+  end
+end
+
 class Services::HubController < ApplicationController
   def show
     dom = DomainRegistry.match_base_domain_config(request.host)

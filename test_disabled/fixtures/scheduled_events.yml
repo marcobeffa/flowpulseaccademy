@@ -1,7 +1,7 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
 one:
-  contact: one
+  lead: one
   training_course: one
   lesson_slug: MyString
   start_at: 2025-09-17 16:10:17
@@ -9,7 +9,7 @@ one:
   note: MyText
 
 two:
-  contact: two
+  lead: two
   training_course: two
   lesson_slug: MyString
   start_at: 2025-09-17 16:10:17

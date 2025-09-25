@@ -1,10 +1,27 @@
 class ApplicationController < ActionController::Base
+  helper_method :canonical_url
+  helper_method :current_domain_config
   include Authentication
   before_action :set_current_domain
 
   # Only allow modern browsers supporting webp images, web push, badges, import maps, CSS nesting, and CSS :has.
   allow_browser versions: :modern
-  helper_method :current_domain_config
+
+
+  def canonical_url
+    svc_key = params[:controller].split("/").first # es. "onlinecourses"
+    svc = DomainRegistry.service(svc_key)
+    return request.url unless svc
+
+    brand = DomainRegistry.find_brand_for_host(request.host)
+    return request.url unless brand
+
+    host = "#{svc['subdomain']}.#{brand['seo']&.dig('canonical_host') || brand['host']}"
+    uri  = URI.parse(request.url)
+    uri.host = host
+    uri.to_s
+  end
+
 
 
   def current_domain_config

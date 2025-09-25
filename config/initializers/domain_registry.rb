@@ -7,6 +7,15 @@
 require "digest"
 
 module DomainRegistry
+   class << self
+    # insieme dei subdomain dei servizi (es. ["flowpulse"])
+    def service_subdomains
+      @service_subdomains ||= services.values.map { |s| s["subdomain"] }.compact.uniq
+    end
+
+    # true se key è una service key valida
+    def service_key?(key) = services.key?(key.to_s)
+   end
   YAML_PATH ||= Rails.root.join("config/domains.yml")
 
   class << self
@@ -152,18 +161,4 @@ end
 Rails.application.config.to_prepare do
   DomainRegistry.load!
   DomainRegistry.setup_file_watcher!
-end
-
-module DomainRoutes
-  module_function
-  # constraints per host multipli
-  def domain_constraint_for_hosts(hosts)
-    re = /\A(?:#{hosts.map { |h| Regexp.escape(h) }.join("|")})\z/
-    ->(req) { req.host.match?(re) }
-  end
-
-  # constraints per servizio (monta solo sui host validi)
-  def service_constraint(key)
-    ->(req) { DomainRegistry.allow_service_host?(key, req.host) }
-  end
 end

@@ -19,14 +19,14 @@
   <div class="rounded-2xl bg-white p-6 shadow">
     <h1 class="text-xl font-semibold text-slate-900 mb-4">Impostazioni Account</h1>
     <%= form_with model: @user, url: account_path, method: :patch, local: true, class: "space-y-8" do |f| %>
-      <% if @user.errors.any? || @user.contact&.errors&.any? %>
+      <% if @user.errors.any? || @user.lead&.errors&.any? %>
         <div class="rounded-xl border border-red-200 bg-red-50 p-4">
           <p class="font-semibold text-red-800">Ci sono errori nel form:</p>
           <ul class="mt-2 list-disc pl-5 text-sm text-red-700">
             <% @user.errors.full_messages.each { |m| %>
             <li><%= m %></li>
             <% } %>
-            <% @user.contact&.errors&.full_messages&.each { |m| %>
+            <% @user.lead&.errors&.full_messages&.each { |m| %>
             <li><%= m %></li>
             <% } %>
           </ul>
@@ -42,7 +42,7 @@
       </div>
       <hr class="my-2">
       <!-- Dati di contatto (profilo pubblico) -->
-      <%= f.fields_for :contact, (@user.contact || @user.build_contact) do |c| %>
+      <%= f.fields_for :lead, (@user.lead || @user.build_lead) do |c| %>
         <h2 class="text-lg font-semibold text-slate-900">Dati di contatto</h2>
         <div class="grid gap-6 md:grid-cols-2">
           <div>
@@ -79,11 +79,11 @@
           </div>
           <div>
             <%= c.label :tipo_utente, "Tipo utente", class: "block text-sm font-semibold text-gray-700 mb-2" %>
-            <%# Se Contact ha enum tipo_utente, usa le chiavi; altrimenti fallback numerico %>
+            <%# Se Lead ha enum tipo_utente, usa le chiavi; altrimenti fallback numerico %>
             <% tipo_options =
-                (Contact.respond_to?(:tipo_utentes) ? Contact.tipo_utentes.keys.map { |k| [k.humanize, k] } :
+                (Lead.respond_to?(:tipo_utentes) ? Lead.tipo_utentes.keys.map { |k| [k.humanize, k] } :
                   [["Utente", 0], ["Professionista salute", 1], ["Professionista benessere", 2]]) %>
-            <% if Contact.respond_to?(:tipo_utentes) %>
+            <% if Lead.respond_to?(:tipo_utentes) %>
               <%= c.select :tipo_utente, tipo_options, {}, class: "w-full rounded-lg border-2 border-gray-200 bg-white px-4 py-3 focus:border-blue-500 focus:outline-none" %>
             <% else %>
               <%= c.number_field :tipo_utente, min: 0,
@@ -98,12 +98,12 @@
             <div>
               <h3 class="text-sm font-semibold text-slate-800">
                 Residenza di riferimento
-                <% if Current.user.contact.address.present? %>
+                <% if Current.user.lead.address.present? %>
                   <br>
-                  <span class="text-lg text-slate-500"><%= Current.user.contact.address %></span>
-                <% elsif Current.user.contact.lat && Current.user.contact.lng %>
+                  <span class="text-lg text-slate-500"><%= Current.user.lead.address %></span>
+                <% elsif Current.user.lead.lat && Current.user.lead.lng %>
                   <br>
-                  <span class="text-lg text-slate-400">[<%= Current.user.contact.lat %>, <%= Current.user.contact.lng %>]</span>
+                  <span class="text-lg text-slate-400">[<%= Current.user.lead.lat %>, <%= Current.user.lead.lng %>]</span>
                 <% end %>
               </h3>
               <p data-geolocate-target="status"
