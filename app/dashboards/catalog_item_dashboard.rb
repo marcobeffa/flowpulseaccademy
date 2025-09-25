@@ -22,7 +22,7 @@ class CatalogItemDashboard < Administrate::BaseDashboard
     version: Field::String,
     yml_path: Field::String,
     created_at: Field::DateTime,
-    updated_at: Field::DateTime,
+    updated_at: Field::DateTime
   }.freeze
 
   # COLLECTION_ATTRIBUTES
