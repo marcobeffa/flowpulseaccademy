@@ -12,7 +12,7 @@ class User < ApplicationRecord
   validates :lead, presence: true
 
   # crea un lead manca (compatibile con email_address del generator)
-  before_validation :ensure_lead, on: :create
+  before_validation :ensure_lead!, on: :create
 
   normalizes :email_address, with: ->(e) { e.strip.downcase }
   def superadmin?
