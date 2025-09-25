@@ -1,5 +1,5 @@
 class Lead < ApplicationRecord
-  enum tipo_utente: { utente: 0, professionista: 1, insegnante: 2 }
+  enum :tipo_utente, { utente: 0, professionista: 1, insegnante: 2 }
 
 
   belongs_to :user, optional: true
