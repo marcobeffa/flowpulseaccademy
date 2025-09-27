@@ -73,9 +73,9 @@ Rails.application.routes.draw do
 
   # --- Aree generiche ---
   resources :domain_subscriptions, only: [ :create ]
-  post   "/domains/:host/subscribe", to: "domain_subscriptions#create",          as: :subscribe_domain
-  delete "/domains/:host/subscribe", to: "domain_subscriptions#destroy_by_host", as: :unsubscribe_domain
 
+  post "domains/subscribe", to: "domain_subscriptions#create", as: :subscribe_domain
+  delete "domains/:host/unsubscribe", to: "domain_subscriptions#destroy", as: :unsubscribe_domain
   draw :dashboard
   draw :superadmin
   draw :admin

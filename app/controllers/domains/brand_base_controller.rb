@@ -3,7 +3,7 @@ module Domains
   class BrandBaseController < ApplicationController
     class_attribute :default_brand_slug, default: "posturacorretta"
     allow_unauthenticated_access only: %i[home about contact privacy terms page]
-
+    layout "landing"
     def home    = render_brand_page("home")
     def about   = render_brand_page("about")
     def contact = render_brand_page("contact")
